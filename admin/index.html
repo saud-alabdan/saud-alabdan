@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>لوحة التحكم — سعود العبدان</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app" class="app" aria-busy="true">
+
+    <!-- ── Sidebar: one entry per config group ───────────────────────────── -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">س</div>
+        <div class="brand-text">
+          <strong>لوحة التحكم</strong>
+          <span>إدارة محتوى الموقع</span>
+        </div>
+      </div>
+
+      <nav id="nav" class="nav" aria-label="أقسام المحتوى"><!-- built by app.js --></nav>
+
+      <div class="sidebar-foot">
+        <span id="source-badge" class="badge badge-neutral">جارٍ التحميل…</span>
+      </div>
+    </aside>
+
+    <!-- ── Main panel ────────────────────────────────────────────────────── -->
+    <main class="main">
+      <header class="topbar">
+        <button class="menu-toggle" id="menu-toggle" aria-label="القائمة" aria-controls="sidebar">☰</button>
+        <div class="topbar-head">
+          <h1 id="section-title">…</h1>
+          <p id="section-desc" class="section-desc"></p>
+        </div>
+        <div id="topbar-actions" class="topbar-actions"><!-- Save / Revert --></div>
+      </header>
+
+      <section id="panel" class="panel" aria-live="polite"><!-- built by app.js --></section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!--
+    Read-only load of the LIVE site configuration. The admin only SOURCES
+    current values from this file; it is never written here. Keeping the
+    public site's single source of truth intact is deliberate.
+  -->
+  <script src="../config/site.config.js"></script>
+  <script src="data-service.js"></script>
+  <script src="schema.js"></script>
+  <script src="media-manager.js"></script>
+  <script src="form-engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
