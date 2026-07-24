@@ -80,7 +80,6 @@
     pages: {
       home:       { title: 'سعود العبدان — استشارات استراتيجية لصناع القرار' },
       about:      { title: 'نبذة — سعود العبدان' },
-      consulting: { title: 'الاستشارات — سعود العبدان' },
       contact:    { title: 'تواصل — سعود العبدان' }
     }
   };
@@ -102,7 +101,7 @@
         enabled: true,
         position: 'right',                        // 'right' | 'left'
         showOnAll: true,
-        showOn: { home: true, consulting: true, about: false, contact: false }
+        showOn: { home: true, about: false, contact: false }
       }
     };
   })();
@@ -112,8 +111,7 @@
     primary: [
       { label: 'الموضوعات', href: '#topics' },
       { label: 'كيف أعمل', href: '#how' },
-      { label: 'لماذا أنا', href: '#why' },
-      { label: 'الاستشارات', href: 'Consulting.dc.html' }
+      { label: 'لماذا أنا', href: '#why' }
     ],
     cta: { label: 'احجز استشارة', href: '#contact' }
   };
@@ -125,7 +123,6 @@
         title: 'التنقل',
         links: [
           { label: 'نبذة', href: 'About.dc.html' },
-          { label: 'الاستشارات', href: 'Consulting.dc.html' },
           { label: 'المنتجات', href: 'Products.dc.html' },
           { label: 'الدورات', href: 'Courses.dc.html' },
           { label: 'تواصل', href: 'Contact.dc.html' }
