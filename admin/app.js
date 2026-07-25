@@ -73,8 +73,26 @@
     });
   }
 
-  /* ── Boot ─────────────────────────────────────────────────────────────── */
-  function init() {
+  /* ── Boot / auth gate ─────────────────────────────────────────────────────
+   * When Supabase is configured, writing requires a signed-in session, so an
+   * unauthenticated visitor sees the login screen first. When Supabase is not
+   * configured (credentials not filled in yet), the CMS still opens on the
+   * bundled config (read-only) so the workflow is unchanged for setup. */
+  function start() {
+    wireChrome();
+    gate();
+  }
+
+  function gate() {
+    if (window.SB && window.SB.configured() && !window.SB.isAuthed()) {
+      renderLogin();
+      $('#app').setAttribute('aria-busy', 'false');
+      return;
+    }
+    boot();
+  }
+
+  function boot() {
     window.SiteContent.load().then(function (doc) {
       if (!doc.services) doc.services = clone(SERVICES_DEFAULT);
       migrateServices(doc);
@@ -82,8 +100,8 @@
       state.original = clone(doc);
       state.doc = clone(doc);
       renderSourceBadge();
+      renderAuthControls();
       buildNav();
-      wireChrome();
       var initial = (location.hash || '').replace('#', '');
       selectSection(sectionById(initial) ? initial : SECTIONS[0].id);
       $('#app').setAttribute('aria-busy', 'false');
@@ -91,6 +109,52 @@
       $('#panel').appendChild(el('div', { class: 'form-note', text: 'تعذّر تحميل الإعدادات: ' + err.message }));
       $('#app').setAttribute('aria-busy', 'false');
     });
+  }
+
+  /* Login screen (only when Supabase is configured and no session). */
+  function renderLogin() {
+    state.activeId = null;
+    $('#nav').textContent = '';
+    $('#topbar-actions').textContent = '';
+    $('#section-title').textContent = 'تسجيل الدخول';
+    $('#section-desc').textContent = 'أدخل بيانات الدخول لإدارة المحتوى.';
+    var panel = $('#panel');
+    panel.textContent = '';
+
+    var email = el('input', { id: 'login-email', type: 'email', autocomplete: 'username' });
+    var pass = el('input', { id: 'login-pass', type: 'password', autocomplete: 'current-password' });
+    var errEl = el('p', { class: 'error' });
+    var btn = el('button', { class: 'btn btn-primary', type: 'submit', text: 'دخول' });
+    var form = el('form', { class: 'form login-form' }, [
+      el('div', { class: 'field' }, [el('label', { for: 'login-email', text: 'البريد الإلكتروني' }), email]),
+      el('div', { class: 'field' }, [el('label', { for: 'login-pass', text: 'كلمة المرور' }), pass]),
+      errEl, btn
+    ]);
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      errEl.textContent = '';
+      btn.disabled = true; btn.textContent = 'جارٍ الدخول…';
+      window.SB.signIn(email.value.trim(), pass.value).then(function () {
+        gate();
+      }).catch(function (err) {
+        btn.disabled = false; btn.textContent = 'دخول';
+        errEl.textContent = 'تعذّر تسجيل الدخول: ' + (err.message || '');
+      });
+    });
+    panel.appendChild(form);
+  }
+
+  /* Sign-out control in the sidebar footer (only when signed in). */
+  function renderAuthControls() {
+    var foot = document.querySelector('.sidebar-foot');
+    if (!foot) return;
+    var existing = document.getElementById('btn-signout');
+    if (existing) existing.parentNode.removeChild(existing);
+    if (window.SB && window.SB.configured() && window.SB.isAuthed()) {
+      var btn = el('button', { class: 'btn btn-ghost btn-sm', id: 'btn-signout', type: 'button', text: 'تسجيل الخروج' });
+      btn.addEventListener('click', function () { window.SB.signOut().then(function () { location.reload(); }); });
+      foot.appendChild(btn);
+    }
   }
 
   function renderSourceBadge() {
@@ -203,12 +267,21 @@
     var save = $('#btn-save');
     save.disabled = true; save.textContent = 'جارٍ الحفظ…';
     window.SiteContent.save(state.doc).then(function (res) {
-      state.original = clone(state.doc);
       save.textContent = 'حفظ التغييرات';
-      updateActions();
-      refreshNavDots();
-      if (res.persisted) { toast('تم الحفظ — حدّث الموقع لرؤية التغييرات', 'ok'); renderSourceBadge(); }
-      else toast('تعذّر الحفظ محليًا — التغييرات في الذاكرة فقط', 'warn');
+      if (res.persisted) {
+        state.original = clone(state.doc);
+        window.SiteContent.source = 'api';
+        updateActions();
+        refreshNavDots();
+        toast('تم الحفظ — حدّث الموقع لرؤية التغييرات', 'ok');
+        renderSourceBadge();
+      } else {
+        updateActions(); // still dirty → Save stays available
+        if (res.via === 'unconfigured') toast('Supabase غير مُهيّأ — تعذّر الحفظ', 'err');
+        else toast('تعذّر الحفظ: ' + (res.error || 'خطأ غير معروف'), 'err');
+        // Session likely expired — return to the login screen.
+        if (window.SB && window.SB.configured() && !window.SB.isAuthed()) renderLogin();
+      }
     });
   }
 
@@ -222,6 +295,6 @@
     toastTimer = setTimeout(function () { t.className = 'toast'; }, 3200);
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-  else init();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
 })();

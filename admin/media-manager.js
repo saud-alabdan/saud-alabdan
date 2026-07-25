@@ -15,12 +15,15 @@
  *                 STORED VALUE: an object { src, name, size, type } (or null),
  *                 so filename and size can be displayed and persisted.
  *
- * NO BACKEND (this phase): uploads are embedded as data: URLs inside the same
- * document that data-service.js persists (localStorage) and cms-overlay.js
- * applies to the public site. Images are downscaled + re-encoded to WebP to
- * keep the document small. When a backend/object-store lands, only this file
- * changes: upload → POST → store the returned URL; the node types, schema, and
- * every consumer stay identical.
+ * STORAGE: uploads go to Supabase Storage (bucket `media`) via window.SB
+ * (config/supabase-client.js). Images are still downscaled + re-encoded to WebP
+ * before upload; the STORED VALUE is the returned PUBLIC URL (image → string
+ * URL; file → { src:URL, name, size, type }) so every public <img src>/<a href>
+ * consumer keeps working unchanged. The node types and schema are identical to
+ * the previous (data-URL) phase — only the transport changed.
+ *
+ * Fallback: if Supabase is not configured, uploads fall back to an inline
+ * data: URL (the previous behaviour) so the CMS still works offline/unwired.
  */
 (function () {
   'use strict';
@@ -74,7 +77,8 @@
       r.readAsDataURL(file);
     });
   }
-  function scaleImage(file) {
+  // Downscale + re-encode to a WebP Blob (for upload).
+  function scaleImageToBlob(file) {
     return createImageBitmap(file).then(function (bmp) {
       try {
         var scale = Math.min(1, MAX_DIM / Math.max(bmp.width, bmp.height));
@@ -83,9 +87,17 @@
         var c = document.createElement('canvas');
         c.width = w; c.height = h;
         c.getContext('2d').drawImage(bmp, 0, 0, w, h);
-        return c.toDataURL('image/webp', QUALITY);
+        return new Promise(function (res, rej) {
+          c.toBlob(function (b) { b ? res(b) : rej(new Error('encode failed')); }, 'image/webp', QUALITY);
+        });
       } finally { if (bmp.close) bmp.close(); }
     });
+  }
+  // Persist a Blob/File and resolve to a URL. Supabase Storage when configured,
+  // else an inline data: URL (previous behaviour) so the CMS still works unwired.
+  function putMedia(blob, filename, contentType) {
+    if (window.SB && window.SB.configured()) return window.SB.uploadMedia(blob, filename, contentType);
+    return readDataUrl(blob);
   }
   // Preview only: resolve a relative config path against the site root (the
   // CMS runs from /admin/). Stored value is never rewritten.
@@ -133,6 +145,12 @@
     var wrap = el('div', { class: 'media media-image' }, [preview, body, input]);
 
     function setErr(m) { err.textContent = m || ''; wrap.classList.toggle('has-err', !!m); }
+    function setBusy(b) {
+      wrap.classList.toggle('is-busy', b);
+      [btnUpload, btnReplace, btnRemove].forEach(function (x) { x.disabled = b; });
+      if (b) { err.textContent = 'جارٍ الرفع…'; wrap.classList.remove('has-err'); }
+      else if (err.textContent === 'جارٍ الرفع…') { err.textContent = ''; }
+    }
     function render() {
       var has = !!current;
       wrap.classList.toggle('is-filled', has);
@@ -148,11 +166,17 @@
       if (!file) return;
       if (file.type && IMAGE_ACCEPT.indexOf(file.type) < 0) { setErr('صيغة الصورة غير مدعومة.'); return; }
       if (file.size > maxSize) { setErr('حجم الملف يتجاوز الحد المسموح (' + formatBytes(maxSize) + ').'); return; }
-      var task = file.type === 'image/svg+xml'
-        ? readDataUrl(file)
-        : scaleImage(file).catch(function () { return readDataUrl(file); });
-      task.then(function (url) { current = url; onChange(current); render(); })
-          .catch(function () { setErr('تعذّر قراءة الصورة.'); });
+      setBusy(true);
+      var prep = file.type === 'image/svg+xml'
+        ? Promise.resolve(file)                                       // upload SVG as-is
+        : scaleImageToBlob(file).catch(function () { return file; }); // fallback: original bytes
+      prep.then(function (blob) {
+        return putMedia(blob, file.name || 'image', blob.type || file.type);
+      }).then(function (url) {
+        current = url; onChange(current); setBusy(false); render();
+      }).catch(function (e) {
+        setBusy(false); setErr(e && e.message ? e.message : 'تعذّر رفع الصورة.');
+      });
     }
 
     btnUpload.onclick = btnReplace.onclick = function () { input.click(); };
@@ -202,6 +226,12 @@
     var wrap = el('div', { class: 'media media-file' }, [body, input]);
 
     function setErr(m) { err.textContent = m || ''; wrap.classList.toggle('has-err', !!m); }
+    function setBusy(b) {
+      wrap.classList.toggle('is-busy', b);
+      [btnUpload, btnReplace, btnRemove].forEach(function (x) { x.disabled = b; });
+      if (b) { err.textContent = 'جارٍ الرفع…'; wrap.classList.remove('has-err'); }
+      else if (err.textContent === 'جارٍ الرفع…') { err.textContent = ''; }
+    }
     function render() {
       var has = !!(current && current.src);
       wrap.classList.toggle('is-filled', has);
@@ -224,10 +254,11 @@
       var ext = extOf(file.name);
       if (ext && !exts[ext]) { setErr('نوع الملف غير مدعوم. المسموح: ' + formats.join('، ') + '.'); return; }
       if (file.size > maxSize) { setErr('حجم الملف يتجاوز الحد المسموح (' + formatBytes(maxSize) + ').'); return; }
-      readDataUrl(file).then(function (url) {
+      setBusy(true);
+      putMedia(file, file.name, file.type).then(function (url) {
         current = { src: url, name: file.name, size: file.size, type: file.type || '' };
-        onChange(current); render();
-      }).catch(function () { setErr('تعذّر قراءة الملف.'); });
+        onChange(current); setBusy(false); render();
+      }).catch(function (e) { setBusy(false); setErr(e && e.message ? e.message : 'تعذّر رفع الملف.'); });
     }
 
     btnUpload.onclick = btnReplace.onclick = function () { input.click(); };
