@@ -217,11 +217,33 @@ class Component extends DCLogic {
     if (this.state.cfg) return;
     let tries = 0;
     const poll = () => {
-      if (window.SITE) { this.setState({ cfg: window.SITE }, () => this.applySeo()); return; }
+      if (window.SITE) { this.setState({ cfg: window.SITE }); return; }
       if (tries++ < 120) requestAnimationFrame(poll);
     };
     poll();
   }
+
+  // When cfg arrives asynchronously (Supabase read), the component re-renders
+  // and this fires after the commit. Re-run the cfg-dependent effects the ref
+  // callbacks already ran once while cfg was null — otherwise the portrait, the
+  // stats count-up, and the dynamically rendered Topics/How sections (their
+  // data-reveal elements are added by this render) stay empty/invisible.
+  componentDidUpdate() {
+    if (this.state.cfg && !this._effectsDone) {
+      this._effectsDone = true;
+      this.applySeo();
+      this.applyCfgEffects();
+    }
+  }
+
+  // Re-applies every cfg-driven ref effect. Not needed on the synchronous path
+  // (there the refs already fired with cfg present at first render).
+  applyCfgEffects = () => {
+    this.applyPortrait();
+    this.applyWhyPortrait();
+    this.armReveal();
+    this.runStats();
+  };
 
   applySeo() {
     const c = this.state.cfg || window.SITE;
@@ -239,85 +261,95 @@ class Component extends DCLogic {
   }
 
   setRootRef = (el) => {
-    if (!el || this.rootEl === el) return;
+    if (!el) return;
     this.rootEl = el;
-    const armReveal = () => {
-      el.querySelectorAll('[data-stagger]').forEach((c, i) => { c.style.transitionDelay = ((i % 8) * 70) + 'ms'; });
-      const tl = el.querySelector('#how-timeline');
-      if (tl) {
-        const nodes = Array.from(tl.querySelectorAll('.how-node'));
-        const cards = Array.from(tl.querySelectorAll('.how-card'));
-        const run = () => {
-          if (tl.getBoundingClientRect().top >= window.innerHeight * 0.9) return;
-          window.removeEventListener('scroll', run);
-          tl.classList.add('drawn');           // line draws first
-          nodes.forEach((n, i) => setTimeout(() => { n.style.opacity = '1'; n.style.transform = 'none'; }, 500 + i * 70));
-          cards.forEach((cd, i) => setTimeout(() => { cd.style.opacity = '1'; cd.style.transform = 'none'; }, 800 + i * 70));
-        };
-        window.addEventListener('scroll', run, { passive: true });
-        run();
-      }
-      const pending = Array.from(el.querySelectorAll('[data-reveal]'));
-      const reveal = (t) => { t.style.opacity = '1'; t.style.transform = 'none'; };
-      const check = () => {
-        const vh = window.innerHeight;
-        for (let i = pending.length - 1; i >= 0; i--) {
-          const r = pending[i].getBoundingClientRect();
-          if (r.top < vh * 0.92) { reveal(pending[i]); pending.splice(i, 1); }
-        }
-        if (!pending.length) { window.removeEventListener('scroll', check); window.removeEventListener('resize', check); }
-      };
-      window.addEventListener('scroll', check, { passive: true });
-      window.addEventListener('resize', check, { passive: true });
-      check();
-    };
-    requestAnimationFrame(armReveal);
+    requestAnimationFrame(this.armReveal);
   };
 
-  setPortrait = (el) => {
-    if (!el) return;
-    const src = this.state.cfg && this.state.cfg.brand.portrait;
+  armReveal = () => {
+    // Query the document (not a captured root ref): the DC runtime rebuilds the
+    // template subtree on setState, so a stored root element can be stale after
+    // an async cfg load. The reveal is page-global anyway.
+    if (!this.rootEl) return;
+    document.querySelectorAll('[data-stagger]').forEach((c, i) => { c.style.transitionDelay = ((i % 8) * 70) + 'ms'; });
+    const tl = document.querySelector('#how-timeline');
+    if (tl) {
+      const nodes = Array.from(tl.querySelectorAll('.how-node'));
+      const cards = Array.from(tl.querySelectorAll('.how-card'));
+      const run = () => {
+        if (tl.getBoundingClientRect().top >= window.innerHeight * 0.9) return;
+        window.removeEventListener('scroll', run);
+        tl.classList.add('drawn');           // line draws first
+        nodes.forEach((n, i) => setTimeout(() => { n.style.opacity = '1'; n.style.transform = 'none'; }, 500 + i * 70));
+        cards.forEach((cd, i) => setTimeout(() => { cd.style.opacity = '1'; cd.style.transform = 'none'; }, 800 + i * 70));
+      };
+      window.addEventListener('scroll', run, { passive: true });
+      run();
+    }
+    const pending = Array.from(document.querySelectorAll('[data-reveal]'));
+    const reveal = (t) => { t.style.opacity = '1'; t.style.transform = 'none'; };
+    const check = () => {
+      const vh = window.innerHeight;
+      for (let i = pending.length - 1; i >= 0; i--) {
+        const r = pending[i].getBoundingClientRect();
+        if (r.top < vh * 0.92) { reveal(pending[i]); pending.splice(i, 1); }
+      }
+      if (!pending.length) { window.removeEventListener('scroll', check); window.removeEventListener('resize', check); }
+    };
+    window.addEventListener('scroll', check, { passive: true });
+    window.addEventListener('resize', check, { passive: true });
+    check();
+  };
+
+  setPortrait = (el) => { if (!el) return; this.portraitEl = el; this.applyPortrait(); };
+  applyPortrait = () => {
+    const el = this.portraitEl; if (!el) return;
+    const src = this.state.cfg && this.state.cfg.brand && this.state.cfg.brand.portrait;
     if (src && el.getAttribute('src') !== src) el.setAttribute('src', src);
   };
 
-  setWhyPortrait = (el) => {
-    if (!el) return;
-    const src = this.state.cfg && this.state.cfg.content.why.portrait;
+  setWhyPortrait = (el) => { if (!el) return; this.whyPortraitEl = el; this.applyWhyPortrait(); };
+  applyWhyPortrait = () => {
+    const el = this.whyPortraitEl; if (!el) return;
+    const src = this.state.cfg && this.state.cfg.content && this.state.cfg.content.why && this.state.cfg.content.why.portrait;
     if (src && el.getAttribute('src') !== src) el.setAttribute('src', src);
   };
 
   setStatsRef = (el) => {
-    if (!el || this.statsEl === el) return;
+    if (!el) return;
     this.statsEl = el;
-    const items = (this.state.cfg && this.state.cfg.content.stats.items) || [];
-    const run = () => {
-      if (this.statsDone) return;
-      if (el.getBoundingClientRect().top >= window.innerHeight * 0.85) return;
-      this.statsDone = true;
-      window.removeEventListener('scroll', run);
-      const cells = Array.from(el.querySelectorAll('[data-stat]'));
-      cells.forEach((cell, i) => {
-        const target = items[i] ? items[i].value : 0;
-        const numEl = cell.querySelector('.stat-num');
-        const suffix = numEl.querySelector('.stat-suffix');
-        const labelEl = cell.querySelector('.stat-label');
-        const startDelay = 100 * (i + 1);
-        const dur = 1350;
-        setTimeout(() => {
-          const t0 = performance.now();
-          const tick = (now) => {
-            const p = Math.min((now - t0) / dur, 1);
-            const eased = 1 - Math.pow(1 - p, 3);
-            numEl.firstChild.nodeValue = Math.round(target * eased).toString();
-            if (p < 1) requestAnimationFrame(tick);
-            else { numEl.firstChild.nodeValue = target.toString(); if (labelEl) labelEl.style.opacity = '1'; }
-          };
-          requestAnimationFrame(tick);
-        }, startDelay);
-      });
-    };
-    window.addEventListener('scroll', run, { passive: true });
-    run();
+    window.addEventListener('scroll', this.runStats, { passive: true });
+    this.runStats();
+  };
+
+  runStats = () => {
+    const el = this.statsEl;
+    if (!el || this.statsDone) return;
+    if (el.getBoundingClientRect().top >= window.innerHeight * 0.85) return;
+    const items = (this.state.cfg && this.state.cfg.content && this.state.cfg.content.stats && this.state.cfg.content.stats.items) || [];
+    if (!items.length) return;   // cfg not ready yet — applyCfgEffects() re-runs this
+    this.statsDone = true;
+    window.removeEventListener('scroll', this.runStats);
+    const cells = Array.from(el.querySelectorAll('[data-stat]'));
+    cells.forEach((cell, i) => {
+      const target = items[i] ? items[i].value : 0;
+      const numEl = cell.querySelector('.stat-num');
+      const suffix = numEl.querySelector('.stat-suffix');
+      const labelEl = cell.querySelector('.stat-label');
+      const startDelay = 100 * (i + 1);
+      const dur = 1350;
+      setTimeout(() => {
+        const t0 = performance.now();
+        const tick = (now) => {
+          const p = Math.min((now - t0) / dur, 1);
+          const eased = 1 - Math.pow(1 - p, 3);
+          numEl.firstChild.nodeValue = Math.round(target * eased).toString();
+          if (p < 1) requestAnimationFrame(tick);
+          else { numEl.firstChild.nodeValue = target.toString(); if (labelEl) labelEl.style.opacity = '1'; }
+        };
+        requestAnimationFrame(tick);
+      }, startDelay);
+    });
   };
 
   setNavRef = (el) => {
