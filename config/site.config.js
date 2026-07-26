@@ -62,6 +62,7 @@
     heroKicker: 'استشارات استراتيجية لصناع القرار',
     portrait: 'uploads/صورتي.png',
     email: 'contact@saudalabdan.com',
+    phone: '',                                    // future-ready; hidden while empty
     location: 'الرياض، المملكة العربية السعودية',
     copyright: '© 2026 سعود العبدان',
     lang: 'ar',
@@ -139,11 +140,14 @@
   };
 
   /* ── FOOTER SOCIAL CHANNELS ────────────────────────────────────────────
-   * `type` selects the outline icon rendered by the component.            */
+   * `type` selects the outline icon. `hidden:true` hides a channel (absent =
+   * visible). The email channel derives its address from SITE.email — the
+   * single source — so the address lives in exactly one place.              */
   const SOCIAL = [
-    { type: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com' },
-    { type: 'x',        label: 'X',        href: 'https://x.com' },
-    { type: 'email',    label: 'البريد',   href: 'mailto:contact@saudalabdan.com' }
+    { type: 'linkedin',  label: 'LinkedIn',  href: 'https://www.linkedin.com' },
+    { type: 'x',         label: 'X',         href: 'https://x.com' },
+    { type: 'instagram', label: 'Instagram', href: '', hidden: true },
+    { type: 'email',     label: 'البريد' }
   ];
 
   /* ── PAGE CONTENT ──────────────────────────────────────────────────────
@@ -290,7 +294,7 @@
     theme: THEME,
     site: SITE,
     brand: { name: SITE.name, tagline: SITE.tagline, heroKicker: SITE.heroKicker, portrait: SITE.portrait },
-    contact: { email: SITE.email, location: SITE.location, copyright: SITE.copyright },
+    contact: { email: SITE.email, phone: SITE.phone, location: SITE.location, copyright: SITE.copyright },
     seo: SEO,
     whatsapp: WHATSAPP,
     navigation: NAVIGATION,

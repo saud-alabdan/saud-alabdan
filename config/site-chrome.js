@@ -33,6 +33,7 @@
   var ICON = {
     linkedin: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="7.5" y1="10.5" x2="7.5" y2="17"/><circle cx="7.5" cy="7" r="0.6" fill="currentColor" stroke="none"/><path d="M11 17v-3.5a2 2 0 0 1 4 0V17"/><line x1="11" y1="10.5" x2="11" y2="17"/></svg>',
     x: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l16 16M20 4L4 20"/></svg>',
+    instagram: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r="0.6" fill="currentColor" stroke="none"/></svg>',
     email: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M4 7l8 6 8-6"/></svg>'
   };
 
@@ -145,11 +146,14 @@
       h('div', { style: { fontSize: '14px', lineHeight: 1.85, color: k.muted, maxWidth: '280px' } }, brand.tagline || '')
     );
 
+    // Footer navigation: hidden items drop out; the remaining links keep their
+    // CMS order (reorder via the CMS list controls) and close any gap.
     var colEls = cols.map(function (col, i) {
+      var links = (col.links || []).filter(function (l) { return l && !l.hidden; });
       return h('div', { key: i, style: { flex: '1 1 160px', minWidth: '160px' } },
         h('div', { style: { fontSize: '12px', fontWeight: 600, color: k.accent, marginBottom: '18px' } }, col.title || ''),
         h('div', { style: { display: 'flex', flexDirection: 'column', gap: '16px', fontSize: '14px' } },
-          (col.links || []).map(function (l, j) {
+          links.map(function (l, j) {
             return h('a', { key: j, className: 'sc-foot-link', href: l.href }, l.label);
           })
         )
@@ -159,24 +163,47 @@
     var topRow = h('div', { key: 'top', style: { display: 'flex', gap: 'clamp(28px,5vw,80px)', flexWrap: 'wrap' } },
       [brandBlock].concat(colEls));
 
-    var socialEls = social.map(function (s, i) {
+    // Social channels: hidden ones drop out and the row re-flows (no empty gap).
+    // The email channel's address is derived from the single source (contact.email).
+    var socialEls = social.filter(function (s) { return s && !s.hidden && ICON[s.type]; }).map(function (s, i) {
+      var href = (s.type === 'email') ? ('mailto:' + (contact.email || '')) : (s.href || '');
       return h('a', {
-        key: i, className: 'sc-social', href: s.href, target: '_blank', rel: 'noopener', 'aria-label': s.label,
+        key: i, className: 'sc-social', href: href, target: (s.type === 'email' ? undefined : '_blank'), rel: 'noopener', 'aria-label': s.label,
         style: { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '42px', height: '42px', borderRadius: '50%' },
         dangerouslySetInnerHTML: { __html: ICON[s.type] || '' }
       });
     });
 
+    // Address + optional phone (phone hidden until a number is set in the CMS).
+    var contactInfo = [h('span', { key: 'addr' }, contact.location || '')];
+    if (contact.phone) {
+      contactInfo.push(h('span', { key: 'sep', 'aria-hidden': 'true', style: { margin: '0 8px', opacity: 0.5 } }, '·'));
+      contactInfo.push(h('a', { key: 'tel', href: 'tel:' + String(contact.phone).replace(/\s+/g, ''), style: { color: 'inherit', textDecoration: 'none' } }, contact.phone));
+    }
+
     var bottom = h('div', { key: 'bottom', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '20px 28px', flexWrap: 'wrap', paddingTop: 'clamp(32px,3.6vw,44px)', borderTop: '1px solid #F0ECE5', fontSize: '13px', color: '#9A938A' } },
       h('div', { key: 'c' }, contact.copyright || ''),
       h('div', { key: 's', style: { display: 'flex', alignItems: 'center', gap: '16px', order: 3 } }, socialEls),
-      h('div', { key: 'l', style: { color: k.muted } }, contact.location || '')
+      h('div', { key: 'l', style: { color: k.muted } }, contactInfo)
     );
+
+    // Reserve room so the fixed WhatsApp button never overlaps footer content.
+    // Only added on pages where the button is actually included, on every size.
+    var footPadBottom = fabOnPage()
+      ? 'calc(clamp(28px,3.2vw,40px) + 72px + env(safe-area-inset-bottom,0px))'
+      : 'clamp(28px,3.2vw,40px)';
 
     return h('footer', {
       className: 'sc-site-footer',
-      style: { maxWidth: '1400px', margin: '0 auto', padding: 'clamp(50px,5.6vw,74px) clamp(20px,6vw,64px) clamp(28px,3.2vw,40px)', display: 'flex', flexDirection: 'column', gap: 'clamp(38px,4vw,48px)' }
+      style: { maxWidth: '1400px', margin: '0 auto', padding: 'clamp(50px,5.6vw,74px) clamp(20px,6vw,64px) ' + footPadBottom, display: 'flex', flexDirection: 'column', gap: 'clamp(38px,4vw,48px)' }
     }, topRow, bottom);
+  }
+
+  // True when the floating WhatsApp button module is present on this page — the
+  // one signal that the fixed button will render here, so the footer reserves
+  // clearance only where it is actually needed (not config-guessed).
+  function fabOnPage() {
+    return !!document.querySelector('script[src*="whatsapp-button.js"]');
   }
 
   // Shared final call-to-action — one CMS-managed section (content.closingCta)
@@ -210,10 +237,16 @@
 
   function vals(cfg) {
     var pid = pageId();
+    var email = (cfg && cfg.contact && cfg.contact.email) || '';
     return {
       siteHeader: renderHeader(cfg, pid),
       siteFooter: renderFooter(cfg, pid),
-      siteClosing: renderClosingCta(cfg)
+      siteClosing: renderClosingCta(cfg),
+      // Single-source contact values for page bodies (Contact/Privacy/Terms) so
+      // the email/address live only in the CMS, never hardcoded per page.
+      contactEmail: email,
+      contactEmailHref: email ? ('mailto:' + email) : '',
+      contactAddress: (cfg && cfg.contact && cfg.contact.location) || ''
     };
   }
 

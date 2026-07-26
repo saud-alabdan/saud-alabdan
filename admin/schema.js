@@ -18,7 +18,7 @@ window.CMS_SCHEMA = (function () {
   var PRICE_TYPE = [['fixed', 'سعر ثابت'], ['from', 'يبدأ من'], ['contact', 'تواصل لمعرفة السعر'], ['custom', 'نص مخصص']];
   var PERIOD = [['session', 'لكل جلسة'], ['month', 'شهري'], ['once', 'مرة واحدة']];
   var ICONS = [['calendar', 'تقويم'], ['messages', 'محادثة'], ['clipboard', 'قائمة'], ['handshake', 'مصافحة']];
-  var SOCIAL_TYPES = [['linkedin', 'LinkedIn'], ['x', 'X'], ['email', 'البريد']];
+  var SOCIAL_TYPES = [['linkedin', 'LinkedIn'], ['x', 'X'], ['instagram', 'Instagram'], ['email', 'البريد']];
   var CTA = { type: 'group', key: 'cta', label: 'زر الإجراء', fields: [
     { type: 'text', key: 'label', label: 'النص' },
     { type: 'text', key: 'href', label: 'الرابط' }
@@ -40,8 +40,9 @@ window.CMS_SCHEMA = (function () {
       { type: 'text', key: 'name', label: 'اسم العلامة', required: true, hint: 'يظهر في الشريط العلوي وفي التذييل.' },
       { type: 'textarea', key: 'tagline', label: 'الوصف المختصر', hint: 'جملة تعريفية قصيرة تظهر في التذييل.' },
       { type: 'text', key: 'heroKicker', label: 'العنوان التمهيدي', hint: 'نص صغير يظهر أعلى عنوان الواجهة.' },
-      { type: 'email', key: 'email', label: 'البريد الإلكتروني', required: true },
-      { type: 'text', key: 'location', label: 'الموقع' },
+      { type: 'email', key: 'email', label: 'البريد الإلكتروني', required: true, hint: 'المصدر الوحيد للبريد — يظهر في التذييل وصفحات التواصل تلقائيًا.' },
+      { type: 'text', key: 'phone', label: 'رقم الهاتف', hint: 'اختياري — يظهر في التذييل عند إضافته، ويبقى مخفيًا إذا تُرك فارغًا.' },
+      { type: 'text', key: 'location', label: 'العنوان' },
       { type: 'text', key: 'copyright', label: 'حقوق النشر' },
       { type: 'image', key: 'portrait', label: 'الصورة الشخصية',
         recommended: 'صورة عمودية، ~1200×1500 بكسل', formats: ['JPG', 'PNG', 'WebP', 'SVG'], maxSize: 4194304,
@@ -150,16 +151,18 @@ window.CMS_SCHEMA = (function () {
         { type: 'text', key: 'title', label: 'عنوان العمود' },
         { type: 'list', key: 'links', label: 'الروابط', itemLabel: 'رابط', addLabel: 'إضافة رابط', titleKey: 'label', fields: [
           { type: 'text', key: 'label', label: 'النص' },
-          { type: 'text', key: 'href', label: 'الرابط' }
+          { type: 'text', key: 'href', label: 'الرابط' },
+          { type: 'checkbox', key: 'hidden', label: 'إخفاء من التذييل' }
         ] }
       ] }
     ] },
 
     { id: 'social', group: 'content', label: 'قنوات التواصل', desc: 'روابط الشبكات الاجتماعية.', base: '', dirtyPath: 'social', fields: [
       { type: 'list', key: 'social', label: 'القنوات', itemLabel: 'قناة', addLabel: 'إضافة قناة', titleKey: 'label', fields: [
-        { type: 'select', key: 'type', label: 'النوع', options: SOCIAL_TYPES },
+        { type: 'select', key: 'type', label: 'المنصّة', options: SOCIAL_TYPES },
         { type: 'text', key: 'label', label: 'التسمية' },
-        { type: 'text', key: 'href', label: 'الرابط' }
+        { type: 'text', key: 'href', label: 'الرابط', hint: 'يُتجاهل لقناة البريد — يُشتق من البريد الإلكتروني في «الهوية والعلامة».' },
+        { type: 'checkbox', key: 'hidden', label: 'إخفاء' }
       ] }
     ] },
 

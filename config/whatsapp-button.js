@@ -65,10 +65,9 @@
       '.wa-fab .wa-ico{flex:0 0 56px;width:56px;height:56px;display:flex;align-items:center;justify-content:center;}' +
       '.wa-fab .wa-ico svg{display:block;width:24px;height:24px;}' +
       '.wa-fab .wa-lbl{font-weight:600;padding-inline-end:20px;}' +
-      // Reserve clearance at the end of the page on mobile so the fixed button
-      // never sits on top of actionable content (footer links, social icons,
-      // bottom CTAs). Only added on pages where the button actually renders.
-      '@media (max-width:768px){body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px)) !important;}}' +
+      // Page-bottom clearance so the fixed button never overlaps footer content
+      // is owned by the shared footer (config/site-chrome.js), which reserves it
+      // on every screen size only on pages where this button is included.
       '@media (prefers-reduced-motion:reduce){.wa-fab{transition:none;}.wa-fab:hover{transform:none;}}';
     document.head.appendChild(style);
 
