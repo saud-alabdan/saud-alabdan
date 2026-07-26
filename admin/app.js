@@ -36,6 +36,20 @@
    * canonical fields (site fields, whatsapp number/message); this keeps the
    * derived aliases in sync so the emitted document stays consistent. */
   function normalizeDoc(doc) {
+    // Single source of truth for the email: it must live only in site.email.
+    // A legacy "email" social channel used to carry its own address — a second,
+    // divergent copy. Adopt any such address into site.email, then drop it from
+    // the channel so an email can never be stored in two places again. The
+    // footer icon derives its mailto from site.email, so the displayed email
+    // and the generated link always come from the same source.
+    if (Array.isArray(doc.social) && doc.site) {
+      doc.social.forEach(function (s) {
+        if (!s || s.type !== 'email') return;
+        var addr = String(s.href || '').replace(/^mailto:/i, '').trim();
+        if (addr) doc.site.email = addr;
+        if ('href' in s) delete s.href;
+      });
+    }
     if (doc.site) {
       doc.brand = doc.brand || {}; doc.contact = doc.contact || {};
       doc.brand.name = doc.site.name;
@@ -43,6 +57,7 @@
       doc.brand.heroKicker = doc.site.heroKicker;
       doc.brand.portrait = doc.site.portrait;
       doc.contact.email = doc.site.email;
+      doc.contact.phone = doc.site.phone;
       doc.contact.location = doc.site.location;
       doc.contact.copyright = doc.site.copyright;
     }
