@@ -266,7 +266,6 @@ and wait for approval.
 ## Public Website
 
 - Home.dc.html
-- About.dc.html
 - Consulting.dc.html
 - Products.dc.html
 - Courses.dc.html

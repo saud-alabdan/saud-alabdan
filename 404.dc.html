@@ -3,7 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- CMS integration: apply saved CMS content over the config source, then the
+     shared header/footer read from it. Must run before the runtime boots. -->
+<script src="./config/supabase.config.js"></script>
+<script src="./config/supabase-client.js"></script>
+<script src="./config/cms-overlay.js"></script>
 <script src="./support.js"></script>
+<!-- Shared Header + Footer — the single source of the site chrome. -->
+<script src="./config/site-chrome.js"></script>
 </head>
 <body>
 <x-dc>
@@ -12,6 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="./config/site.config.js"></script>
   <style>
     html { scroll-behavior: smooth; }
     body { margin: 0; background: oklch(0.975 0.006 75); direction: rtl; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
@@ -22,9 +30,7 @@
 
 <div dir="rtl" lang="ar" style="font-family:'IBM Plex Sans Arabic', sans-serif; color:oklch(0.16 0.012 75); background:oklch(0.975 0.006 75); width:100%; overflow-x:hidden; min-height:100vh; display:flex; flex-direction:column;">
 
-  <header style="display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap; padding:24px clamp(20px,6vw,64px);">
-    <a href="Home.dc.html" style="font-size:22px; font-weight:600; letter-spacing:0.5px; color:inherit; text-decoration:none;">سعود العبدان</a>
-  </header>
+  {{ siteHeader }}
 
   <section style="flex:1; position:relative; display:flex; align-items:center; justify-content:center; text-align:center; padding:40px clamp(20px,6vw,64px); overflow:hidden;">
     <div aria-hidden="true" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:clamp(220px,34vw,440px); line-height:1; font-weight:700; color:oklch(0.16 0.012 75 / 0.035); white-space:nowrap; pointer-events:none; user-select:none;">404</div>
@@ -38,10 +44,17 @@
     </div>
   </section>
 
-  <footer style="padding:32px clamp(20px,6vw,64px); text-align:center; font-size:13px; color:oklch(0.55 0.01 75);">© 2026 سعود العبدان</footer>
+  {{ siteFooter }}
 
 </div>
 
 </x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { cfg: (typeof window !== 'undefined' && window.SITE) ? window.SITE : null };
+  componentDidMount() { if (window.SiteChrome) window.SiteChrome.watch(this); }
+  renderVals() { return window.SiteChrome ? window.SiteChrome.vals(this.state.cfg) : {}; }
+}
+</script>
 </body>
 </html>

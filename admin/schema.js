@@ -60,7 +60,6 @@ window.CMS_SCHEMA = (function () {
       ] },
       { type: 'group', key: 'pages', label: 'عناوين الصفحات', fields: [
         { type: 'group', key: 'home', label: 'الرئيسية', fields: [{ type: 'text', key: 'title', label: 'العنوان' }] },
-        { type: 'group', key: 'about', label: 'نبذة', fields: [{ type: 'text', key: 'title', label: 'العنوان' }] },
         { type: 'group', key: 'contact', label: 'تواصل', fields: [{ type: 'text', key: 'title', label: 'العنوان' }] }
       ] }
     ] },
@@ -71,8 +70,7 @@ window.CMS_SCHEMA = (function () {
         { type: 'text', key: 'href', label: 'الرابط', required: true }
       ] },
       { type: 'group', key: 'cta', label: 'زر الحجز', fields: [
-        { type: 'text', key: 'label', label: 'النص' },
-        { type: 'text', key: 'href', label: 'الرابط' }
+        { type: 'text', key: 'label', label: 'النص', hint: 'الوجهة هي إجراء الحجز الموحّد (واتساب) المُدار من قسم إعدادات واتساب.' }
       ] }
     ] },
 
@@ -88,7 +86,6 @@ window.CMS_SCHEMA = (function () {
         { type: 'checkbox', key: 'showOnAll', label: 'إظهار في جميع الصفحات' },
         { type: 'group', key: 'showOn', label: 'صفحات محددة (عند إلغاء «جميع الصفحات»)', fields: [
           { type: 'checkbox', key: 'home', label: 'الرئيسية' },
-          { type: 'checkbox', key: 'about', label: 'نبذة' },
           { type: 'checkbox', key: 'contact', label: 'تواصل' }
         ] }
       ] }

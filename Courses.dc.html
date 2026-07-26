@@ -9,6 +9,8 @@
 <script src="./config/supabase-client.js"></script>
 <script src="./config/cms-overlay.js"></script>
 <script src="./support.js"></script>
+<!-- Shared Header + Footer — the single source of the site chrome. -->
+<script src="./config/site-chrome.js"></script>
 <!-- Reusable floating WhatsApp button — reads window.SITE.whatsapp (CMS). -->
 <script src="./config/whatsapp-button.js"></script>
 </head>
@@ -25,18 +27,20 @@
     body { margin: 0; background: oklch(0.975 0.006 75); direction: rtl; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
     * { box-sizing: border-box; }
     ::selection { background: oklch(0.52 0.1 70 / 0.25); }
+    /* Phones: tighten the section vertical rhythm so the page isn't overly
+       stretched on a narrow screen. Horizontal padding and desktop scale
+       untouched. first section = intro, #courses = cards, last = dark CTA. */
+    @media (max-width: 600px) {
+      section:first-of-type { padding-top: 48px !important; padding-bottom: 32px !important; }
+      #courses { padding-top: 32px !important; padding-bottom: 48px !important; }
+      section:last-of-type { padding-top: 56px !important; padding-bottom: 56px !important; }
+    }
   </style>
 </helmet>
 
 <div ref="{{ setRootRef }}" dir="rtl" lang="ar" style="font-family:'IBM Plex Sans Arabic', sans-serif; color:oklch(0.16 0.012 75); background:oklch(0.975 0.006 75); width:100%; overflow-x:hidden;">
 
-  <header ref="{{ setNavRef }}" style="position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap; padding:24px clamp(20px,6vw,64px); background:oklch(0.975 0.006 75 / 0.85); backdrop-filter:blur(10px); transition:padding .35s ease, box-shadow .35s ease; box-shadow:none;">
-    <a href="Home.dc.html" style="font-size:22px; font-weight:600; letter-spacing:0.5px; color:inherit; text-decoration:none;">سعود العبدان</a>
-    <nav style="display:flex; align-items:center; gap:clamp(16px,3vw,40px); flex-wrap:wrap; font-size:15px; color:oklch(0.45 0.01 75);">
-      <a href="About.dc.html" style="color:inherit; text-decoration:none; background-image:linear-gradient(oklch(0.52 0.1 70),oklch(0.52 0.1 70)); background-repeat:no-repeat; background-position:0 100%; background-size:0% 1px; transition:background-size .35s ease, color .35s ease;" style-hover="background-size:100% 1px; color:oklch(0.16 0.012 75);">نبذة</a>      <a href="Courses.dc.html" style="color:oklch(0.16 0.012 75); text-decoration:none; background-image:linear-gradient(oklch(0.52 0.1 70),oklch(0.52 0.1 70)); background-repeat:no-repeat; background-position:0 100%; background-size:100% 1px;">الدورات</a>
-      <a href="Contact.dc.html" style="color:oklch(0.16 0.012 75); text-decoration:none; padding:10px 22px; border:1px solid oklch(0.16 0.012 75); border-radius:2px; font-size:14px; white-space:nowrap; flex:0 0 auto; transition:background .3s ease, color .3s ease;" style-hover="background:oklch(0.16 0.012 75); color:oklch(0.98 0.005 75);">احجز استشارة</a>
-    </nav>
-  </header>
+  {{ siteHeader }}
 
   <section style="max-width:1400px; margin:0 auto; padding:clamp(60px,8vw,110px) clamp(20px,6vw,64px) clamp(40px,6vw,60px);">
     <div data-reveal="up" style="opacity:0; transform:translateY(16px); transition:opacity 1s cubic-bezier(0.22,0.61,0.36,1), transform 1s cubic-bezier(0.22,0.61,0.36,1);">
@@ -50,7 +54,7 @@
        Hidden entirely when there are no active courses. -->
   <sc-if value="{{ hasCourses }}">
   <section id="courses" style="max-width:1400px; margin:0 auto; padding:clamp(40px,5vw,70px) clamp(20px,6vw,64px) clamp(60px,8vw,110px); border-top:1px solid oklch(0.85 0.01 75);">
-    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:clamp(20px,2.4vw,28px);">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr)); gap:clamp(20px,2.4vw,28px);">
       <sc-for list="{{ courses }}" as="card" hint-placeholder-count="2">
         <div style="display:flex; flex-direction:column; background:oklch(0.99 0.004 75); border:1px solid oklch(0.85 0.01 75); border-radius:18px; overflow:hidden;">
           <sc-if value="{{ card.hasCover }}">
@@ -76,43 +80,10 @@
   </section>
   </sc-if>
 
-  <section data-reveal="up" style="background:oklch(0.16 0.012 75); color:oklch(0.98 0.005 75); padding:clamp(80px,11vw,140px) clamp(20px,6vw,64px); text-align:center; opacity:0; transform:translateY(16px); transition:opacity 1s cubic-bezier(0.22,0.61,0.36,1), transform 1s cubic-bezier(0.22,0.61,0.36,1);">
-    <div style="max-width:720px; margin:0 auto;">
-      <h2 style="font-weight:600; font-size:clamp(28px,4vw,42px); line-height:1.4; margin:0 0 24px; text-wrap:pretty;">هل تبحث عن برنامج مخصص لفريقك؟</h2>
-      <p style="font-size:16px; line-height:1.9; color:oklch(0.75 0.01 75); margin:0 0 40px;">تواصل معنا لتصميم دورة أو ورشة تناسب احتياج مؤسستك.</p>
-      <a href="Contact.dc.html" style="display:inline-flex; align-items:center; gap:10px; background:oklch(0.98 0.005 75); color:oklch(0.16 0.012 75); padding:16px 40px; border-radius:2px; text-decoration:none; font-size:16px; transition:gap .3s ease, background .3s ease;" style-hover="gap:13px; background:oklch(0.92 0.01 75);">
-        <span>تواصل معنا</span><span aria-hidden="true">←</span>
-      </a>
-    </div>
-  </section>
+  <!-- CLOSING CTA — shared final call-to-action (config/site-chrome.js) -->
+  {{ siteClosing }}
 
-  <footer style="max-width:1400px; margin:0 auto; padding:clamp(60px,7vw,90px) clamp(20px,6vw,64px) clamp(32px,4vw,48px); display:flex; flex-direction:column; gap:56px;">
-    <div style="display:flex; gap:clamp(32px,6vw,100px); flex-wrap:wrap;">
-      <div style="flex:1 1 220px; min-width:200px;">
-        <div style="font-size:20px; margin-bottom:14px;">سعود العبدان</div>
-        <div style="font-size:14px; line-height:1.9; color:oklch(0.5 0.01 75); max-width:280px;">استشارات استراتيجية لصناع القرار.</div>
-      </div>
-      <div style="flex:1 1 160px; min-width:160px;">
-        <div style="font-size:12px; letter-spacing:0; font-weight:600; color:oklch(0.52 0.1 70); margin-bottom:18px;">التنقل</div>
-        <div style="display:flex; flex-direction:column; gap:12px; font-size:14px;">
-          <a href="About.dc.html" style="color:oklch(0.35 0.012 75); text-decoration:none;">نبذة</a>          <a href="Products.dc.html" style="color:oklch(0.35 0.012 75); text-decoration:none;">المنتجات</a>
-          <a href="Courses.dc.html" style="color:oklch(0.35 0.012 75); text-decoration:none;">الدورات</a>
-          <a href="Contact.dc.html" style="color:oklch(0.35 0.012 75); text-decoration:none;">تواصل</a>
-        </div>
-      </div>
-      <div style="flex:1 1 160px; min-width:160px;">
-        <div style="font-size:12px; letter-spacing:0; font-weight:600; color:oklch(0.52 0.1 70); margin-bottom:18px;">قانوني</div>
-        <div style="display:flex; flex-direction:column; gap:12px; font-size:14px;">
-          <a href="Privacy.dc.html" style="color:oklch(0.35 0.012 75); text-decoration:none;">سياسة الخصوصية</a>
-          <a href="Terms.dc.html" style="color:oklch(0.35 0.012 75); text-decoration:none;">شروط الاستخدام</a>
-        </div>
-      </div>
-    </div>
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap; padding-top:28px; border-top:1px solid oklch(0.88 0.01 75); font-size:13px; color:oklch(0.55 0.01 75);">
-      <div>© 2026 سعود العبدان</div>
-      <div>الرياض، المملكة العربية السعودية</div>
-    </div>
-  </footer>
+  {{ siteFooter }}
 
 </div>
 
@@ -121,20 +92,14 @@
 class Component extends DCLogic {
   state = { cfg: (typeof window !== 'undefined' && window.SITE) ? window.SITE : null };
 
-  componentDidMount() {
-    if (this.state.cfg) return;
-    let tries = 0;
-    const poll = () => {
-      if (window.SITE) { this.setState({ cfg: window.SITE }); return; }
-      if (tries++ < 120) requestAnimationFrame(poll);
-    };
-    poll();
-  }
+  componentDidMount() { if (window.SiteChrome) window.SiteChrome.watch(this); }
 
   setRootRef = (el) => {
     if (!el || this.rootEl === el) return;
     this.rootEl = el;
-    const pending = Array.from(el.querySelectorAll('[data-reveal]'));
+    // Query the document (not the captured root): the DC runtime rebuilds the
+    // template subtree when cfg arrives, so a stored root element goes stale.
+    const pending = Array.from(document.querySelectorAll('[data-reveal]'));
     const reveal = (t) => { t.style.opacity = '1'; t.style.transform = 'none'; };
     const check = () => {
       const vh = window.innerHeight;
@@ -149,20 +114,10 @@ class Component extends DCLogic {
     check();
   };
 
-  setNavRef = (el) => {
-    if (!el || this.navEl) return;
-    this.navEl = el;
-    window.addEventListener('scroll', () => {
-      const scrolled = window.scrollY > 24;
-      el.style.padding = scrolled ? '14px clamp(20px,6vw,64px)' : '24px clamp(20px,6vw,64px)';
-      el.style.boxShadow = scrolled ? '0 1px 0 oklch(0.85 0.01 75)' : 'none';
-    }, { passive: true });
-  };
-
   renderVals() {
-    const base = { setRootRef: this.setRootRef, setNavRef: this.setNavRef };
+    const base = Object.assign({ setRootRef: this.setRootRef }, window.SiteChrome ? window.SiteChrome.vals(this.state.cfg) : {});
     const c = this.state.cfg;
-    if (!c || !c.services) return Object.assign({}, base, { hasCourses: false, courses: [] });
+    if (!c || !c.services) return Object.assign(base, { hasCourses: false, courses: [] });
 
     const CUR = { SAR: 'ريال', USD: 'دولار' };
     const LVL = { beginner: 'مبتدئ', intermediate: 'متوسط', advanced: 'متقدم' };
@@ -195,7 +150,7 @@ class Component extends DCLogic {
         };
       });
 
-    return Object.assign({}, base, { courses: cards, hasCourses: cards.length > 0 });
+    return Object.assign(base, { courses: cards, hasCourses: cards.length > 0 });
   }
 }
 </script>

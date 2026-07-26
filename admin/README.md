@@ -59,8 +59,9 @@ public page → the overlay applies it → the page renders the new content.
 a full page refresh (not just a `#hash` change, which does not reload).
 
 Integrated so far: **`Home.dc.html`** (full page) and **`Consulting.dc.html`**
-(its consultation cards — see below). About / Contact / Privacy / Terms still
-hardcode their content and do not read `window.SITE`.
+(its consultation cards — see below). Every public page renders its shared
+header / footer / final-CTA from `window.SITE` via `config/site-chrome.js`; the
+remaining page bodies (Contact / Privacy / Terms) still hardcode their content.
 
 ## Consultation Management
 
@@ -131,7 +132,7 @@ types, schema, and every consumer stay identical.
 The **"إعدادات واتساب"** CMS section (`whatsapp`) is the single source for all
 WhatsApp behaviour: `enabled`, `number`, `message`, `buttonLabel`,
 `businessHours`, and `floating { enabled, position(left|right), showOnAll,
-showOn{home,consulting,about,contact} }`. `normalizeDoc` (app.js) rebuilds
+showOn{home,contact} }`. `normalizeDoc` (app.js) rebuilds
 `whatsapp.link` from number+message on every edit.
 
 `config/whatsapp-button.js` is the **one** reusable floating button. Include it
@@ -163,7 +164,7 @@ No changes to `data-service.js`, `form-engine.js`, or the shell chrome are neede
 
 ## Note on the public-site page migration
 
-Migrating About / Consulting / Contact / Privacy / Terms into the config system
+Migrating Consulting / Contact / Privacy / Terms into the config system
 is intentionally **out of scope** for this foundation. Those pages currently
 hardcode their content and use a separate `oklch()` color system. When that
 migration happens, this dashboard already has the seam to manage them: add their

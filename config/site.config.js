@@ -79,7 +79,6 @@
     },
     pages: {
       home:       { title: 'سعود العبدان — استشارات استراتيجية لصناع القرار' },
-      about:      { title: 'نبذة — سعود العبدان' },
       contact:    { title: 'تواصل — سعود العبدان' }
     }
   };
@@ -101,7 +100,7 @@
         enabled: true,
         position: 'right',                        // 'right' | 'left'
         showOnAll: true,
-        showOn: { home: true, about: false, contact: false }
+        showOn: { home: true, contact: false }
       }
     };
   })();
@@ -113,7 +112,9 @@
       { label: 'كيف أعمل', href: '#how' },
       { label: 'لماذا أنا', href: '#why' }
     ],
-    cta: { label: 'احجز استشارة', href: '#contact' }
+    // Destination is the single consultation action (whatsapp), so the CTA
+    // carries a label only — no per-CTA link to drift out of sync.
+    cta: { label: 'احجز استشارة' }
   };
 
   /* ── FOOTER ────────────────────────────────────────────────────────────*/
@@ -122,7 +123,6 @@
       {
         title: 'التنقل',
         links: [
-          { label: 'نبذة', href: 'About.dc.html' },
           { label: 'المنتجات', href: 'Products.dc.html' },
           { label: 'الدورات', href: 'Courses.dc.html' },
           { label: 'تواصل', href: 'Contact.dc.html' }
