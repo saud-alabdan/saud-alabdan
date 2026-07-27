@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- CMS integration: apply saved CMS content over the config source, then the
+     shared header/footer read from it. Must run before the runtime boots. -->
+<script src="./config/supabase.config.js"></script>
+<script src="./config/supabase-client.js"></script>
+<script src="./config/cms-overlay.js"></script>
+<script src="./support.js"></script>
+<!-- Shared Header + Footer — the single source of the site chrome. -->
+<script src="./config/site-chrome.js"></script>
+<!-- Reusable content-card / article renderer (same single source as the homepage). -->
+<script src="./config/content-cards.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>مقال — سعود العبدان</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:type" content="article">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="./config/site.config.js"></script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #F7F5F2; direction: rtl; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+    * { box-sizing: border-box; }
+    ::selection { background: #A57A4C40; }
+  </style>
+</helmet>
+
+<div dir="rtl" lang="ar" style="font-family:'IBM Plex Sans Arabic', sans-serif; color:#232323; background:#F7F5F2; width:100%; overflow-x:hidden; min-height:100vh; display:flex; flex-direction:column;">
+
+  {{ siteHeader }}
+
+  <main style="flex:1 1 auto;">
+    <sc-if value="{{ found }}">
+      {{ articleBody }}
+    </sc-if>
+    <sc-if value="{{ notFound }}">
+      <section style="max-width:760px; margin:0 auto; padding:clamp(60px,10vw,120px) clamp(20px,6vw,40px); text-align:center;">
+        <h1 style="font-weight:600; font-size:clamp(28px,4vw,40px); margin:0 0 16px;">المقال غير موجود</h1>
+        <p style="font-size:16px; line-height:1.9; color:#8A837A; margin:0 0 32px;">عذرًا، لم نتمكّن من العثور على هذا المقال. قد يكون الرابط غير صحيح أو أنّ المقال لم يُنشر.</p>
+        <a href="Articles.dc.html" style="color:#48553F; font-weight:600; text-decoration:none;">← العودة إلى المقالات</a>
+      </section>
+    </sc-if>
+  </main>
+
+  {{ siteFooter }}
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { cfg: (typeof window !== 'undefined' && window.SITE) ? window.SITE : null };
+
+  componentDidMount() {
+    if (window.SiteChrome) window.SiteChrome.watch(this);
+    this.applyArticleSeo();
+  }
+  // cfg may arrive async (Supabase overlay); re-apply SEO once it's present.
+  componentDidUpdate() { if (this.state.cfg && !this._seoDone) this.applyArticleSeo(); }
+
+  get slug() { try { return new URLSearchParams(location.search).get('slug') || ''; } catch (e) { return ''; } }
+
+  absUrl(src) { try { return new URL(src, location.href).href; } catch (e) { return src; } }
+  setMeta(name, content) {
+    if (!content) return;
+    let m = document.querySelector('meta[name="' + name + '"]');
+    if (!m) { m = document.createElement('meta'); m.setAttribute('name', name); document.head.appendChild(m); }
+    m.setAttribute('content', content);
+  }
+  setOg(property, content) {
+    if (!content) return;
+    let m = document.querySelector('meta[property="' + property + '"]');
+    if (!m) { m = document.createElement('meta'); m.setAttribute('property', property); document.head.appendChild(m); }
+    m.setAttribute('content', content);
+  }
+
+  applyArticleSeo() {
+    const c = this.state.cfg; if (!c) return;
+    const a = window.ContentCards ? window.ContentCards.findArticle(c, this.slug) : null;
+    document.documentElement.lang = (c.site && c.site.lang) || 'ar';
+    document.documentElement.dir = (c.site && c.site.dir) || 'rtl';
+    if (!a) { document.title = 'المقال غير موجود — ' + ((c.site && c.site.name) || ''); return; }
+    this._seoDone = true;
+    const name = (c.site && c.site.name) || '';
+    document.title = (a.seoTitle || a.title || '') + (name ? ' — ' + name : '');
+    this.setMeta('description', a.seoDescription || a.summary || '');
+    this.setMeta('keywords', a.seoKeywords || '');
+    const img = window.ContentCards ? window.ContentCards.shareImageOf(a) : (a.shareImage || a.cover || '');
+    this.setOg('og:title', a.seoTitle || a.title || '');
+    this.setOg('og:description', a.seoDescription || a.summary || '');
+    this.setOg('og:url', location.href);
+    if (img) this.setOg('og:image', this.absUrl(img));
+  }
+
+  renderVals() {
+    const c = this.state.cfg;
+    const base = Object.assign({}, window.SiteChrome ? window.SiteChrome.vals(c) : {});
+    const a = (c && window.ContentCards) ? window.ContentCards.findArticle(c, this.slug) : null;
+    base.articleBody = a ? window.ContentCards.renderArticleBody(c, a) : null;
+    base.found = !!a;
+    base.notFound = !a;
+    return base;
+  }
+}
+</script>
+</body>
+</html>

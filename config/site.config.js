@@ -319,9 +319,10 @@
   };
 
   /* ── ARTICLES / BLOG ───────────────────────────────────────────────────
-   * Managed by the CMS "المقالات" module. Each item: { cover, title, slug,
-   * summary, body(HTML), author, date, published, featured, seoTitle,
-   * seoDescription }. The single source for every article surface (homepage
+   * Managed by the CMS "المقالات" module. Each item: { cover, shareImage, title,
+   * slug, summary, body(HTML), author, date, updated, published, featured,
+   * cta{enabled,title,description,buttonText,buttonUrl}, seoTitle,
+   * seoDescription, seoKeywords }. The single source for every article surface (homepage
    * "Latest Articles", the Articles page, and each Article page). Empty by
    * default — no article is hardcoded.                                      */
   const ARTICLES = [];

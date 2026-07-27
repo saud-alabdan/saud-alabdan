@@ -273,16 +273,26 @@ window.CMS_SCHEMA = (function () {
     { id: 'articles', group: 'blog', label: 'المقالات', desc: 'إدارة مقالات المدونة — المصدر الوحيد للمقالات المنشورة على الموقع.', base: '', dirtyPath: 'articles', fields: [
       { type: 'list', key: 'articles', label: 'المقالات', itemLabel: 'مقال', addLabel: 'إضافة مقال', titleKey: 'title', fields: [
         { type: 'image', key: 'cover', label: 'صورة الغلاف', recommended: '1200×630 بكسل', formats: ['JPG', 'PNG', 'WebP'], maxSize: 3145728, hint: 'تظهر في بطاقات المقالات وأعلى صفحة المقال.' },
+        { type: 'image', key: 'shareImage', label: 'صورة المشاركة (اختياري)', recommended: '1200×630 بكسل', formats: ['JPG', 'PNG', 'WebP'], maxSize: 3145728, hint: 'تُستخدم في المشاركة على الشبكات (Open Graph). تُستخدم صورة الغلاف تلقائيًا إذا تُركت فارغة.' },
         { type: 'text', key: 'title', label: 'العنوان', required: true },
         { type: 'text', key: 'slug', label: 'الرابط (Slug)', hint: 'مُعرّف المقال في الرابط. يُشتق من العنوان تلقائيًا عند الحفظ إذا تُرك فارغًا.' },
         { type: 'textarea', key: 'summary', label: 'ملخّص مختصر', hint: 'يظهر في البطاقات وقوائم المقالات.' },
         { type: 'richtext', key: 'body', label: 'محتوى المقال', hint: 'محرّر نصوص: عناوين، غامق، مائل، قوائم، روابط، وصور.' },
         { type: 'text', key: 'author', label: 'الكاتب (اختياري)' },
         { type: 'date', key: 'date', label: 'تاريخ النشر' },
+        { type: 'date', key: 'updated', label: 'تاريخ آخر تحديث (اختياري)', hint: 'يظهر في صفحة المقال عند إضافته.' },
         { type: 'checkbox', key: 'published', label: 'منشور (يظهر في الموقع)' },
         { type: 'checkbox', key: 'featured', label: 'مقال مميّز (اختياري)' },
+        { type: 'group', key: 'cta', label: 'دعوة إلى إجراء (نهاية المقال)', fields: [
+          { type: 'checkbox', key: 'enabled', label: 'تفعيل الدعوة' },
+          { type: 'text', key: 'title', label: 'العنوان' },
+          { type: 'textarea', key: 'description', label: 'الوصف' },
+          { type: 'text', key: 'buttonText', label: 'نص الزر' },
+          { type: 'text', key: 'buttonUrl', label: 'رابط الزر', hint: 'صفحة داخلية أو رابط خارجي (يفتح في تبويب جديد). يصلح للحجز أو منتج أو دورة أو واتساب أو أي صفحة.' }
+        ] },
         { type: 'text', key: 'seoTitle', label: 'عنوان SEO (اختياري)' },
-        { type: 'textarea', key: 'seoDescription', label: 'وصف SEO (اختياري)' }
+        { type: 'textarea', key: 'seoDescription', label: 'وصف SEO (اختياري)' },
+        { type: 'text', key: 'seoKeywords', label: 'كلمات مفتاحية SEO (اختياري)', hint: 'كلمات مفصولة بفواصل.' }
       ] }
     ] },
 
