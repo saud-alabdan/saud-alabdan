@@ -311,6 +311,14 @@
     ]
   };
 
+  /* ── ARTICLES / BLOG ───────────────────────────────────────────────────
+   * Managed by the CMS "المقالات" module. Each item: { cover, title, slug,
+   * summary, body(HTML), author, date, published, featured, seoTitle,
+   * seoDescription }. The single source for every article surface (homepage
+   * "Latest Articles", the Articles page, and each Article page). Empty by
+   * default — no article is hardcoded.                                      */
+  const ARTICLES = [];
+
   /* ── PUBLIC OBJECT ─────────────────────────────────────────────────────
    * Backwards-compatible aliases (brand, contact) are derived from SITE so
    * existing component mappings keep working unchanged.                    */
@@ -325,6 +333,7 @@
     footer: FOOTER,
     social: SOCIAL,
     content: CONTENT,
-    services: SERVICES
+    services: SERVICES,
+    articles: ARTICLES
   };
 })();

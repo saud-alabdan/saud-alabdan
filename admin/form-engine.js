@@ -180,7 +180,7 @@
       control = el('input', { id: id, type: 'color' });
       control.value = /^#[0-9a-fA-F]{6}$/.test(value) ? value : '#000000';
     } else {
-      control = el('input', { id: id, type: node.type === 'number' ? 'number' : (node.type === 'email' ? 'email' : 'text') });
+      control = el('input', { id: id, type: node.type === 'number' ? 'number' : (node.type === 'email' ? 'email' : (node.type === 'date' ? 'date' : 'text')) });
       control.value = value == null ? '' : String(value);
     }
 
@@ -221,6 +221,94 @@
     var box = el('div', { class: 'group' }, [el('div', { class: 'group-title', text: node.label })]);
     box.appendChild(renderSchema(node.fields, path, ctx));
     return box;
+  }
+
+  /* ── rich text ────────────────────────────────────────────────────────────
+   * A lightweight contentEditable editor (no external library). The toolbar uses
+   * document.execCommand for portable formatting; inline images upload through
+   * the shared Media Manager. The stored value is sanitized HTML (whitelist),
+   * so the same string can be rendered on the public site as-is. */
+  var RT_ALLOWED = { P:1, H2:1, H3:1, BR:1, STRONG:1, B:1, EM:1, I:1, U:1, UL:1, OL:1, LI:1, A:1, IMG:1, BLOCKQUOTE:1 };
+  function rtAttrs(tag) { return tag === 'A' ? ['href'] : (tag === 'IMG' ? ['src', 'alt'] : []); }
+  function sanitizeHtml(html) {
+    var src = document.createElement('div'); src.innerHTML = html || '';
+    var out = document.createElement('div');
+    (function clean(from, to) {
+      Array.prototype.slice.call(from.childNodes).forEach(function (n) {
+        if (n.nodeType === 3) { to.appendChild(document.createTextNode(n.nodeValue)); return; }
+        if (n.nodeType !== 1) return;                       // drop comments etc.
+        var tag = n.tagName;
+        if (RT_ALLOWED[tag]) {
+          var e = document.createElement(tag);
+          rtAttrs(tag).forEach(function (a) {
+            var v = n.getAttribute(a);
+            if (v == null) return;
+            if (a === 'href' && /^\s*javascript:/i.test(v)) return;   // block javascript: URLs
+            e.setAttribute(a, v);
+          });
+          if (tag === 'A') { e.setAttribute('target', '_blank'); e.setAttribute('rel', 'noopener'); }
+          clean(n, e);
+          to.appendChild(e);
+        } else {
+          clean(n, to);                                     // unwrap disallowed tags, keep contents
+        }
+      });
+    })(src, out);
+    return out.innerHTML;
+  }
+
+  function rtBtn(label, title, onClick) {
+    var b = el('button', { type: 'button', class: 'rt-btn', title: title || label, text: label });
+    b.addEventListener('mousedown', function (e) { e.preventDefault(); }); // keep editor selection
+    b.addEventListener('click', onClick);
+    return b;
+  }
+
+  function renderRichText(node, base, ctx) {
+    var fullPath = join(base, node.key);
+    var value = getPath(ctx.getDoc(), fullPath);
+    var editor = el('div', { class: 'rt-editor', contenteditable: 'true', role: 'textbox', 'aria-multiline': 'true' });
+    editor.innerHTML = (typeof value === 'string' ? value : '') || '';
+
+    function sync() { setPath(ctx.getDoc(), fullPath, sanitizeHtml(editor.innerHTML)); ctx.onEdit(); }
+    function cmd(command, arg) { editor.focus(); try { document.execCommand(command, false, arg == null ? null : arg); } catch (e) {} sync(); }
+    function insertImage() {
+      var inp = el('input', { type: 'file', accept: 'image/*' });
+      inp.style.display = 'none'; document.body.appendChild(inp);
+      inp.onchange = function () {
+        var f = inp.files && inp.files[0]; document.body.removeChild(inp);
+        if (!f || !window.MediaManager || !window.MediaManager.uploadImage) return;
+        window.MediaManager.uploadImage(f).then(function (url) {
+          editor.focus();
+          try { document.execCommand('insertHTML', false, '<img src="' + url + '" alt="">'); } catch (e) {}
+          sync();
+        }).catch(function () {});
+      };
+      inp.click();
+    }
+
+    var toolbar = el('div', { class: 'rt-toolbar' }, [
+      rtBtn('عنوان', 'عنوان (H2)', function () { cmd('formatBlock', 'H2'); }),
+      rtBtn('عنوان فرعي', 'عنوان فرعي (H3)', function () { cmd('formatBlock', 'H3'); }),
+      rtBtn('فقرة', 'فقرة', function () { cmd('formatBlock', 'P'); }),
+      rtBtn('غامق', 'غامق', function () { cmd('bold'); }),
+      rtBtn('مائل', 'مائل', function () { cmd('italic'); }),
+      rtBtn('• قائمة', 'قائمة نقطية', function () { cmd('insertUnorderedList'); }),
+      rtBtn('1. قائمة', 'قائمة رقمية', function () { cmd('insertOrderedList'); }),
+      rtBtn('رابط', 'إضافة رابط', function () { var u = window.prompt('أدخل الرابط (يبدأ بـ http):', 'https://'); if (u) cmd('createLink', u); }),
+      rtBtn('صورة', 'إدراج صورة', insertImage)
+    ]);
+
+    editor.addEventListener('input', sync);
+    editor.addEventListener('blur', sync);
+
+    return el('div', { class: 'field' }, [
+      el('label', {}, [document.createTextNode(node.label)]),
+      toolbar,
+      editor,
+      node.hint ? el('p', { class: 'hint', text: node.hint }) : null,
+      el('p', { class: 'error' })
+    ]);
   }
 
   function renderList(node, base, ctx) {
@@ -288,6 +376,7 @@
     fields.forEach(function (node) {
       if (node.type === 'group') frag.appendChild(renderGroup(node, base, ctx));
       else if (node.type === 'list') frag.appendChild(renderList(node, base, ctx));
+      else if (node.type === 'richtext') frag.appendChild(renderRichText(node, base, ctx));
       else frag.appendChild(renderField(node, base, ctx));
     });
     return frag;
@@ -297,6 +386,7 @@
     renderSchema: renderSchema,
     collectErrors: collectErrors,
     getPath: getPath,
-    setPath: setPath
+    setPath: setPath,
+    sanitizeHtml: sanitizeHtml
   };
 })();

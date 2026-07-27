@@ -385,6 +385,34 @@ body {
 .media-pick-item.is-current { border-color: var(--primary); box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 22%, transparent); }
 .media-picker-empty { font-size: 12.5px; color: var(--muted); line-height: 1.6; padding: 6px 2px; }
 
+/* ── Rich text editor ───────────────────────────────────────────────────── */
+.rt-toolbar {
+  display: flex; flex-wrap: wrap; gap: 6px; padding: 8px;
+  border: 1px solid var(--line); border-bottom: none;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0; background: var(--surface);
+}
+.rt-btn {
+  font: inherit; font-size: 12.5px; line-height: 1; cursor: pointer;
+  padding: 7px 10px; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--bg); color: var(--ink);
+  transition: border-color .2s ease, background .2s ease, color .2s ease;
+}
+.rt-btn:hover { border-color: var(--primary); color: var(--primary); }
+.rt-editor {
+  min-height: 240px; padding: 14px 16px; overflow-y: auto;
+  border: 1px solid var(--line); border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  background: var(--surface); color: var(--ink); line-height: 1.9; font-size: 15px;
+}
+.rt-editor:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 16%, transparent); }
+.rt-editor h2 { font-size: 1.4em; font-weight: 700; margin: 0.6em 0 0.4em; }
+.rt-editor h3 { font-size: 1.15em; font-weight: 700; margin: 0.6em 0 0.4em; }
+.rt-editor p { margin: 0 0 0.9em; }
+.rt-editor ul, .rt-editor ol { margin: 0 0 0.9em; padding-inline-start: 1.6em; }
+.rt-editor li { margin-bottom: 0.4em; }
+.rt-editor a { color: var(--primary); text-decoration: underline; }
+.rt-editor img { max-width: 100%; height: auto; border-radius: 8px; margin: 0.5em 0; }
+.rt-editor:empty::before { content: attr(data-placeholder); color: var(--muted); }
+
 @media (max-width: 560px) {
   .media { flex-direction: column; }
   .media-preview { width: 100%; height: 160px; }

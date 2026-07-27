@@ -37,7 +37,8 @@ window.CMS_SCHEMA = (function () {
 
   var GROUPS = [
     { id: 'content', label: 'محتوى الموقع' },
-    { id: 'services', label: 'الخدمات' }
+    { id: 'services', label: 'الخدمات' },
+    { id: 'blog', label: 'المدونة' }
   ];
 
   // Default shape for the (new) services model when the loaded document has none.
@@ -259,6 +260,23 @@ window.CMS_SCHEMA = (function () {
           formats: ['PDF', 'DOCX', 'XLSX', 'ZIP'], maxSize: 5242880,
           hint: 'الملف الذي يحصل عليه العميل بعد الشراء.' },
         { type: 'checkbox', key: 'active', label: 'مُفعّل' }
+      ] }
+    ] },
+
+    /* ═══ BLOG / ARTICLES (doc.articles) ════════════════════════════════ */
+    { id: 'articles', group: 'blog', label: 'المقالات', desc: 'إدارة مقالات المدونة — المصدر الوحيد للمقالات المنشورة على الموقع.', base: '', dirtyPath: 'articles', fields: [
+      { type: 'list', key: 'articles', label: 'المقالات', itemLabel: 'مقال', addLabel: 'إضافة مقال', titleKey: 'title', fields: [
+        { type: 'image', key: 'cover', label: 'صورة الغلاف', recommended: '1200×630 بكسل', formats: ['JPG', 'PNG', 'WebP'], maxSize: 3145728, hint: 'تظهر في بطاقات المقالات وأعلى صفحة المقال.' },
+        { type: 'text', key: 'title', label: 'العنوان', required: true },
+        { type: 'text', key: 'slug', label: 'الرابط (Slug)', hint: 'مُعرّف المقال في الرابط. يُشتق من العنوان تلقائيًا عند الحفظ إذا تُرك فارغًا.' },
+        { type: 'textarea', key: 'summary', label: 'ملخّص مختصر', hint: 'يظهر في البطاقات وقوائم المقالات.' },
+        { type: 'richtext', key: 'body', label: 'محتوى المقال', hint: 'محرّر نصوص: عناوين، غامق، مائل، قوائم، روابط، وصور.' },
+        { type: 'text', key: 'author', label: 'الكاتب (اختياري)' },
+        { type: 'date', key: 'date', label: 'تاريخ النشر' },
+        { type: 'checkbox', key: 'published', label: 'منشور (يظهر في الموقع)' },
+        { type: 'checkbox', key: 'featured', label: 'مقال مميّز (اختياري)' },
+        { type: 'text', key: 'seoTitle', label: 'عنوان SEO (اختياري)' },
+        { type: 'textarea', key: 'seoDescription', label: 'وصف SEO (اختياري)' }
       ] }
     ] },
 

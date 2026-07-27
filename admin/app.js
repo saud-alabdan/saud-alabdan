@@ -138,6 +138,7 @@
   function boot() {
     window.SiteContent.load().then(function (doc) {
       if (!doc.services) doc.services = clone(SERVICES_DEFAULT);
+      if (!Array.isArray(doc.articles)) doc.articles = [];
       migrateServices(doc);
       normalizeDoc(doc);
       state.original = clone(doc);
@@ -304,9 +305,31 @@
     toast('تم التراجع عن كل التغييرات غير المحفوظة', 'warn');
   }
 
+  /* Slugs are derived at save time (not while typing) so an empty slug fills
+   * from the title and every article keeps a unique, permanent URL id. */
+  function slugify(s) {
+    return String(s || '').trim().toLowerCase()
+      .replace(/\s+/g, '-').replace(/[^\p{L}\p{N}-]+/gu, '').replace(/-+/g, '-')
+      .replace(/^-|-$/g, '').slice(0, 80);
+  }
+  function finalizeArticleSlugs(doc) {
+    if (!Array.isArray(doc.articles)) return;
+    var seen = {};
+    doc.articles.forEach(function (a, i) {
+      if (!a || typeof a !== 'object') return;
+      var base = (a.slug && String(a.slug).trim()) ? slugify(a.slug) : slugify(a.title);
+      if (!base) base = 'article-' + (i + 1);
+      var slug = base, n = 2;
+      while (seen[slug]) { slug = base + '-' + (n++); }
+      seen[slug] = 1;
+      a.slug = slug;
+    });
+  }
+
   function onSave() {
     var errs = activeErrors();
     if (errs.length) { toast('يرجى تصحيح الحقول المميّزة أولًا', 'err'); return; }
+    finalizeArticleSlugs(state.doc);
     var save = $('#btn-save');
     save.disabled = true; save.textContent = 'جارٍ الحفظ…';
     window.SiteContent.save(state.doc).then(function (res) {

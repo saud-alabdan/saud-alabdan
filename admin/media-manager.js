@@ -318,10 +318,20 @@
     return kind === 'file' ? createFile(node, value, onChange) : createImage(node, value, onChange);
   }
 
+  // Reusable image upload (same downscale + storage path as the image control),
+  // for callers that insert an image inline — e.g. the rich-text editor.
+  // Resolves to the stored public URL (string).
+  function uploadImage(file) {
+    var prep = (file.type === 'image/svg+xml')
+      ? Promise.resolve(file)
+      : scaleImageToBlob(file).catch(function () { return file; });
+    return prep.then(function (blob) { return putMedia(blob, file.name || 'image', blob.type || file.type); });
+  }
+
   // Exposed so the engine's empty-check / validation matches the stored shape.
   function isEmpty(kind, value) {
     return kind === 'file' ? !(value && value.src) : !(typeof value === 'string' && value);
   }
 
-  window.MediaManager = { create: create, isEmpty: isEmpty, setImageSource: setImageSource };
+  window.MediaManager = { create: create, isEmpty: isEmpty, setImageSource: setImageSource, uploadImage: uploadImage };
 })();
