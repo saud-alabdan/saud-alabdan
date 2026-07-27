@@ -29,7 +29,7 @@ window.CMS_SCHEMA = (function () {
   // Home page (no section-ordering engine; each maps to a slot in Home.dc.html).
   var ORG_POS = [['after-hero', 'أسفل الواجهة'], ['after-topics', 'بعد الموضوعات'], ['after-stats', 'بعد الأرقام'], ['after-why', 'بعد «لماذا أنا»'], ['before-closing', 'قبل الدعوة الختامية']];
   // Organizations logo size — maps to responsive dimensions in site-chrome.js.
-  var ORG_SIZE = [['small', 'صغير'], ['medium', 'متوسط'], ['large', 'كبير']];
+  var ORG_SIZE = [['small', 'صغير'], ['medium', 'متوسط'], ['large', 'كبير'], ['xlarge', 'كبير جدًا']];
   var CTA = { type: 'group', key: 'cta', label: 'زر الإجراء', fields: [
     { type: 'text', key: 'label', label: 'النص' },
     { type: 'text', key: 'href', label: 'الرابط' }

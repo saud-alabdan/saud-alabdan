@@ -332,13 +332,16 @@
       head.push(h('p', { key: 'd', style: { fontSize: '16px', lineHeight: 1.9, color: k.body, margin: head.length ? '18px 0 0' : 0, maxWidth: '600px', marginInline: 'auto' } }, org.body));
     }
 
-    // Logo size — a CMS-chosen preset mapped to responsive dimensions. A fixed
-    // cell height + object-fit:contain keeps every logo aligned regardless of its
-    // own proportions; clamp() preserves responsiveness across screen sizes.
+    // Logo size — a CMS-chosen preset mapped to responsive dimensions. Both the
+    // logo's max height AND the cell width scale together so the control has a
+    // clearly visible effect for tall AND wide logos alike. A fixed cell height +
+    // object-fit:contain keeps every logo aligned regardless of its own
+    // proportions; clamp() preserves responsiveness across screen sizes.
     var SIZES = {
-      small:  { maxH: '38px', cellW: 'clamp(104px,13vw,140px)', cellH: '58px' },
-      large:  { maxH: '78px', cellW: 'clamp(152px,20vw,208px)', cellH: '104px' },
-      medium: { maxH: '56px', cellW: 'clamp(128px,16vw,172px)', cellH: '78px' }
+      small:  { maxH: '40px',  cellW: 'clamp(110px,13vw,150px)', cellH: '64px' },
+      medium: { maxH: '64px',  cellW: 'clamp(150px,17vw,200px)', cellH: '92px' },
+      large:  { maxH: '96px',  cellW: 'clamp(190px,22vw,260px)', cellH: '128px' },
+      xlarge: { maxH: '128px', cellW: 'clamp(230px,27vw,320px)', cellH: '168px' }
     };
     var sz = SIZES[org.logoSize] || SIZES.medium;
 
