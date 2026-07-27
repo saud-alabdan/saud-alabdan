@@ -227,6 +227,20 @@
       background: 'primary',               // primary | secondary | light | dark | transparent
       textStyle: 'auto',                   // auto | light | dark
       buttonStyle: 'primary'               // primary | secondary | outline | ghost
+    },
+
+    // 7 — Organizations / logo wall (shared, fully CMS-managed — see config/site-chrome.js)
+    // Reusable logo strip. Position on the Home page is chosen from the CMS via a
+    // lightweight anchor selector (no section-ordering engine). No organization is
+    // hardcoded — the list is managed entirely from the CMS.
+    organizations: {
+      enabled: true,                       // show / hide the whole section
+      position: 'before-closing',          // after-hero | after-topics | after-stats | after-why | before-closing
+      title: 'جهات نفخر بالعمل معها',
+      showTitle: true,                     // show / hide the title
+      body: '',
+      showDescription: false,              // show / hide the description
+      items: []                            // { logo, name, url?, alt, order, hidden } — added from the CMS
     }
   };
 

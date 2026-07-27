@@ -25,6 +25,9 @@ window.CMS_SCHEMA = (function () {
   var CTA_BG = [['primary', 'أساسي'], ['secondary', 'ثانوي'], ['light', 'فاتح'], ['dark', 'داكن'], ['transparent', 'شفاف']];
   var CTA_TEXT = [['auto', 'تلقائي'], ['light', 'فاتح'], ['dark', 'داكن']];
   var CTA_BTN = [['primary', 'أساسي'], ['secondary', 'ثانوي'], ['outline', 'محدد'], ['ghost', 'شبح']];
+  // Organizations section — the lightweight anchor points it can occupy on the
+  // Home page (no section-ordering engine; each maps to a slot in Home.dc.html).
+  var ORG_POS = [['after-hero', 'أسفل الواجهة'], ['after-topics', 'بعد الموضوعات'], ['after-stats', 'بعد الأرقام'], ['after-why', 'بعد «لماذا أنا»'], ['before-closing', 'قبل الدعوة الختامية']];
   var CTA = { type: 'group', key: 'cta', label: 'زر الإجراء', fields: [
     { type: 'text', key: 'label', label: 'النص' },
     { type: 'text', key: 'href', label: 'الرابط' }
@@ -158,6 +161,25 @@ window.CMS_SCHEMA = (function () {
       { type: 'select', key: 'background', label: 'نمط الخلفية', options: CTA_BG, hint: 'من ألوان الهوية فقط.' },
       { type: 'select', key: 'textStyle', label: 'نمط النص', options: CTA_TEXT, hint: 'تلقائي: يتباين مع الخلفية.' },
       { type: 'select', key: 'buttonStyle', label: 'نمط الزر', options: CTA_BTN }
+    ] },
+
+    { id: 'organizations', group: 'content', label: 'الجهات', desc: 'شريط شعارات الجهات التي تعاملت معها — مُدار بالكامل من هنا.', base: 'content.organizations', fields: [
+      { type: 'checkbox', key: 'enabled', label: 'إظهار القسم', hint: 'عند إيقافه يختفي القسم تمامًا من الصفحة.' },
+      { type: 'select', key: 'position', label: 'موضع القسم في الصفحة', options: ORG_POS, hint: 'يحدد مكان ظهور شريط الشعارات داخل الصفحة الرئيسية.' },
+      { type: 'checkbox', key: 'showTitle', label: 'إظهار العنوان' },
+      { type: 'text', key: 'title', label: 'العنوان' },
+      { type: 'checkbox', key: 'showDescription', label: 'إظهار الوصف' },
+      { type: 'textarea', key: 'body', label: 'الوصف' },
+      { type: 'list', key: 'items', label: 'الجهات', itemLabel: 'جهة', addLabel: 'إضافة جهة', titleKey: 'name', fields: [
+        { type: 'image', key: 'logo', label: 'الشعار',
+          recommended: 'شعار أفقي بخلفية شفافة (PNG أو SVG)', formats: ['PNG', 'SVG', 'WebP', 'JPG'], maxSize: 2097152,
+          hint: 'يظهر ضمن شريط الشعارات.' },
+        { type: 'text', key: 'name', label: 'اسم الجهة', required: true },
+        { type: 'text', key: 'url', label: 'رابط الموقع (اختياري)', hint: 'عند إضافته يُفتح في تبويب جديد. اتركه فارغًا لعرض شعار غير قابل للنقر.' },
+        { type: 'text', key: 'alt', label: 'النص البديل', hint: 'وصف مختصر للشعار لتحسين الوصول. يُستخدم اسم الجهة إذا تُرك فارغًا.' },
+        { type: 'number', key: 'order', label: 'ترتيب العرض', hint: 'الأصغر يظهر أولًا.' },
+        { type: 'checkbox', key: 'hidden', label: 'إخفاء' }
+      ] }
     ] },
 
     { id: 'footer', group: 'content', label: 'التذييل', desc: 'أعمدة الروابط أسفل الموقع.', base: 'footer', fields: [

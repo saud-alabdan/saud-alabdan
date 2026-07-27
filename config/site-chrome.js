@@ -73,7 +73,10 @@
       '.sc-social{color:' + LINK_GRAY + ';border:1px solid ' + k.lineSoft + ';transition:color .3s ease,border-color .3s ease;}' +
       '.sc-social:hover{color:' + k.primary + ';border-color:' + k.primary + ';}' +
       '.sc-closing-btn{transition:transform .2s ease,box-shadow .2s ease,background .2s ease;}' +
-      '.sc-closing-btn:hover{transform:translateY(-2px);box-shadow:0 12px 28px -18px rgba(0,0,0,0.4);}';
+      '.sc-closing-btn:hover{transform:translateY(-2px);box-shadow:0 12px 28px -18px rgba(0,0,0,0.4);}' +
+      '.sc-org-cell{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;filter:grayscale(1);opacity:.62;transition:filter .35s ease,opacity .35s ease,transform .35s ease;}' +
+      '.sc-org-cell:hover{filter:grayscale(0);opacity:1;}' +
+      'a.sc-org-cell:hover{transform:translateY(-2px);}';
     document.head.appendChild(s);
   }
 
@@ -302,6 +305,60 @@
     }, kids);
   }
 
+  // Shared "Organizations" logo wall — ONE CMS-managed component
+  // (content.organizations) reusable on any page. Fully content-driven:
+  // show/hide the whole section, optional title + description (each with its own
+  // show/hide), and an unlimited list of logos. Each item: logo, name, optional
+  // url, alt text, display order, and a per-item hide. Returns null when the
+  // section is disabled or has no visible logo, so the page reserves no height.
+  // Placement on a page is decided by the page (via `position`), not here — this
+  // renderer only produces the section. No organization is hardcoded.
+  function renderOrganizations(cfg) {
+    if (!cfg) return null;
+    var org = (cfg.content && cfg.content.organizations) || {};
+    if (org.enabled === false) return null;                 // show / hide (absent = visible)
+    // Visible items only (drop hidden and any lacking a logo), ordered by `order`.
+    var items = (org.items || []).filter(function (o) { return o && !o.hidden && o.logo; });
+    items = items.slice().sort(function (a, b) { return (Number(a.order) || 0) - (Number(b.order) || 0); });
+    if (!items.length) return null;                         // nothing to show → no empty section
+    var k = colors(cfg);
+    ensureStyle(k);
+
+    var head = [];
+    if (org.showTitle !== false && org.title) {
+      head.push(h('h2', { key: 't', style: { fontFamily: FONT, fontWeight: 700, fontSize: 'clamp(26px,3.2vw,38px)', lineHeight: 1.34, margin: 0, color: k.ink, textWrap: 'pretty' } }, org.title));
+    }
+    if (org.showDescription && org.body) {
+      head.push(h('p', { key: 'd', style: { fontSize: '16px', lineHeight: 1.9, color: k.body, margin: head.length ? '18px 0 0' : 0, maxWidth: '600px', marginInline: 'auto' } }, org.body));
+    }
+
+    // Each logo: an <a> (new tab) when a URL exists, else a non-clickable <div>.
+    // A broken image hides its own cell so the wall never shows a broken glyph.
+    var cells = items.map(function (o, i) {
+      var img = h('img', {
+        src: o.logo, alt: (o.alt || o.name || ''), loading: 'lazy',
+        onError: function (e) { var c = e.target && e.target.parentNode; if (c && c.style) c.style.display = 'none'; },
+        style: { maxHeight: '46px', maxWidth: '150px', width: 'auto', height: 'auto', objectFit: 'contain', display: 'block' }
+      });
+      var url = String(o.url || '').trim();
+      var cellStyle = { width: 'clamp(120px,15vw,160px)', height: '64px' };
+      if (url) {
+        return h('a', { key: i, className: 'sc-org-cell', href: url, target: '_blank', rel: 'noopener', 'aria-label': (o.name || o.alt || ''), style: cellStyle }, img);
+      }
+      return h('div', { key: i, className: 'sc-org-cell', role: 'img', 'aria-label': (o.name || o.alt || ''), style: cellStyle }, img);
+    });
+
+    var grid = h('div', { key: 'grid', style: { display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: 'clamp(24px,3.5vw,52px)' } }, cells);
+
+    return h('section', {
+      id: 'organizations', 'data-reveal': 'up',
+      style: { maxWidth: '1400px', margin: '0 auto', padding: 'clamp(56px,7vw,96px) clamp(20px,6vw,64px)', borderTop: '1px solid ' + k.line, textAlign: 'center', opacity: 0, transform: 'translateY(16px)', transition: 'opacity 1s cubic-bezier(0.22,0.61,0.36,1), transform 1s cubic-bezier(0.22,0.61,0.36,1)' }
+    },
+      head.length ? h('div', { key: 'head', style: { maxWidth: '640px', margin: '0 auto clamp(40px,5vw,60px)' } }, head) : null,
+      grid
+    );
+  }
+
   function vals(cfg) {
     var pid = pageId();
     var email = (cfg && cfg.contact && cfg.contact.email) || '';
@@ -346,6 +403,7 @@
     renderHeader: renderHeader,
     renderFooter: renderFooter,
     renderClosingCta: renderClosingCta,
+    renderOrganizations: renderOrganizations,
     vals: vals,
     watch: watch
   };

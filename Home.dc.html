@@ -102,6 +102,9 @@
     </div>
   </section>
 
+  <!-- ORGANIZATIONS slot (CMS position: after-hero) -->
+  {{ orgAfterHero }}
+
   <!-- TOPICS -->
   <section id="topics" style="max-width:1400px; margin:0 auto; padding:clamp(80px,10vw,140px) clamp(20px,6vw,64px) clamp(72px,9vw,120px);">
     <h2 data-reveal="up" style="font-size:clamp(28px,3.4vw,42px); font-weight:700; line-height:1.32; color:#232323; max-width:640px; margin:0 0 clamp(48px,6vw,72px); text-wrap:pretty; opacity:0; transform:translateY(16px); transition:opacity 1s cubic-bezier(0.22,0.61,0.36,1), transform 1s cubic-bezier(0.22,0.61,0.36,1);">{{ topics.title }}</h2>
@@ -115,6 +118,9 @@
       </sc-for>
     </div>
   </section>
+
+  <!-- ORGANIZATIONS slot (CMS position: after-topics) -->
+  {{ orgAfterTopics }}
 
   <!-- HOW IT WORKS -->
   <section id="how" style="max-width:1400px; margin:0 auto; padding:clamp(72px,9vw,130px) clamp(20px,6vw,64px); border-top:1px solid #E6E0D8;">
@@ -148,6 +154,9 @@
     </div>
   </section>
 
+  <!-- ORGANIZATIONS slot (CMS position: after-stats) -->
+  {{ orgAfterStats }}
+
   <!-- WHY -->
   <section id="why" data-reveal="up" style="max-width:1400px; margin:0 auto; padding:clamp(70px,9vw,120px) clamp(20px,6vw,64px); border-top:1px solid #E6E0D8; display:flex; gap:clamp(40px,6vw,90px); flex-wrap:wrap; align-items:stretch; opacity:0; transform:translateY(16px); transition:opacity 1s cubic-bezier(0.22,0.61,0.36,1), transform 1s cubic-bezier(0.22,0.61,0.36,1);">
     <div style="flex:1 1 400px; min-width:280px; max-width:505px; align-self:flex-end;">
@@ -169,6 +178,9 @@
     </div>
   </section>
 
+  <!-- ORGANIZATIONS slot (CMS position: after-why) -->
+  {{ orgAfterWhy }}
+
   <!-- AVAILABLE CONSULTATIONS — dynamic from CMS services.consultations,
        rendered via the SAME shared card renderer as the Consulting page.
        Inserted between "Why choose me" and the Final CTA; no other section changed. -->
@@ -178,6 +190,9 @@
     {{ consultationsGrid }}
   </section>
   </sc-if>
+
+  <!-- ORGANIZATIONS slot (CMS position: before-closing) -->
+  {{ orgBeforeClosing }}
 
   <!-- CLOSING CTA — shared final call-to-action (config/site-chrome.js) -->
   {{ siteClosing }}
@@ -335,6 +350,14 @@ class Component extends DCLogic {
     // Shared header + footer — the single source for the site chrome.
     const chrome = window.SiteChrome ? window.SiteChrome.vals(c) : {};
 
+    // Organizations logo wall — the shared, CMS-managed component. It renders once
+    // and appears at whichever Home anchor the CMS `position` selects (all other
+    // slots resolve to null). No hardcoded position, no hardcoded organization.
+    const orgEl = (window.SiteChrome && window.SiteChrome.renderOrganizations)
+      ? window.SiteChrome.renderOrganizations(c) : null;
+    const orgPos = (c.content && c.content.organizations && c.content.organizations.position) || 'before-closing';
+    const orgAt = (key) => (orgEl && orgPos === key) ? orgEl : null;
+
     const T = c.theme.color;
     // "Available Consultations" cards — from the SHARED renderer, the same
     // single source the Consulting page uses (no duplicated data or markup).
@@ -361,6 +384,11 @@ class Component extends DCLogic {
     return {
       ...base,
       ...chrome,
+      orgAfterHero: orgAt('after-hero'),
+      orgAfterTopics: orgAt('after-topics'),
+      orgAfterStats: orgAt('after-stats'),
+      orgAfterWhy: orgAt('after-why'),
+      orgBeforeClosing: orgAt('before-closing'),
       consultationsGrid,
       hasConsultations: !!consultationsGrid,
       brand: c.brand,
