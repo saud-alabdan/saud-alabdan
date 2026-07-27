@@ -236,6 +236,7 @@
     organizations: {
       enabled: true,                       // show / hide the whole section
       position: 'before-closing',          // after-hero | after-topics | after-stats | after-why | before-closing
+      logoSize: 'medium',                  // small | medium | large (responsive; controls displayed logo size)
       title: 'جهات نفخر بالعمل معها',
       showTitle: true,                     // show / hide the title
       body: '',

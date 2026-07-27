@@ -332,16 +332,26 @@
       head.push(h('p', { key: 'd', style: { fontSize: '16px', lineHeight: 1.9, color: k.body, margin: head.length ? '18px 0 0' : 0, maxWidth: '600px', marginInline: 'auto' } }, org.body));
     }
 
+    // Logo size — a CMS-chosen preset mapped to responsive dimensions. A fixed
+    // cell height + object-fit:contain keeps every logo aligned regardless of its
+    // own proportions; clamp() preserves responsiveness across screen sizes.
+    var SIZES = {
+      small:  { maxH: '38px', cellW: 'clamp(104px,13vw,140px)', cellH: '58px' },
+      large:  { maxH: '78px', cellW: 'clamp(152px,20vw,208px)', cellH: '104px' },
+      medium: { maxH: '56px', cellW: 'clamp(128px,16vw,172px)', cellH: '78px' }
+    };
+    var sz = SIZES[org.logoSize] || SIZES.medium;
+
     // Each logo: an <a> (new tab) when a URL exists, else a non-clickable <div>.
     // A broken image hides its own cell so the wall never shows a broken glyph.
     var cells = items.map(function (o, i) {
       var img = h('img', {
         src: o.logo, alt: (o.alt || o.name || ''), loading: 'lazy',
         onError: function (e) { var c = e.target && e.target.parentNode; if (c && c.style) c.style.display = 'none'; },
-        style: { maxHeight: '46px', maxWidth: '150px', width: 'auto', height: 'auto', objectFit: 'contain', display: 'block' }
+        style: { maxHeight: sz.maxH, maxWidth: '100%', width: 'auto', height: 'auto', objectFit: 'contain', display: 'block' }
       });
       var url = String(o.url || '').trim();
-      var cellStyle = { width: 'clamp(120px,15vw,160px)', height: '64px' };
+      var cellStyle = { width: sz.cellW, height: sz.cellH };
       if (url) {
         return h('a', { key: i, className: 'sc-org-cell', href: url, target: '_blank', rel: 'noopener', 'aria-label': (o.name || o.alt || ''), style: cellStyle }, img);
       }

@@ -28,6 +28,8 @@ window.CMS_SCHEMA = (function () {
   // Organizations section — the lightweight anchor points it can occupy on the
   // Home page (no section-ordering engine; each maps to a slot in Home.dc.html).
   var ORG_POS = [['after-hero', 'أسفل الواجهة'], ['after-topics', 'بعد الموضوعات'], ['after-stats', 'بعد الأرقام'], ['after-why', 'بعد «لماذا أنا»'], ['before-closing', 'قبل الدعوة الختامية']];
+  // Organizations logo size — maps to responsive dimensions in site-chrome.js.
+  var ORG_SIZE = [['small', 'صغير'], ['medium', 'متوسط'], ['large', 'كبير']];
   var CTA = { type: 'group', key: 'cta', label: 'زر الإجراء', fields: [
     { type: 'text', key: 'label', label: 'النص' },
     { type: 'text', key: 'href', label: 'الرابط' }
@@ -166,6 +168,7 @@ window.CMS_SCHEMA = (function () {
     { id: 'organizations', group: 'content', label: 'الجهات', desc: 'شريط شعارات الجهات التي تعاملت معها — مُدار بالكامل من هنا.', base: 'content.organizations', fields: [
       { type: 'checkbox', key: 'enabled', label: 'إظهار القسم', hint: 'عند إيقافه يختفي القسم تمامًا من الصفحة.' },
       { type: 'select', key: 'position', label: 'موضع القسم في الصفحة', options: ORG_POS, hint: 'يحدد مكان ظهور شريط الشعارات داخل الصفحة الرئيسية.' },
+      { type: 'select', key: 'logoSize', label: 'حجم الشعارات', options: ORG_SIZE, hint: 'يتحكم في حجم عرض الشعارات على الموقع. يبقى متجاوبًا مع جميع أحجام الشاشات.' },
       { type: 'checkbox', key: 'showTitle', label: 'إظهار العنوان' },
       { type: 'text', key: 'title', label: 'العنوان' },
       { type: 'checkbox', key: 'showDescription', label: 'إظهار الوصف' },
