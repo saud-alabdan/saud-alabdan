@@ -34,6 +34,13 @@
   var MAX_DIM = 1600;      // longest side after downscale
   var QUALITY = 0.82;      // WebP quality
 
+  // Optional provider of already-used images, registered by the host (app.js).
+  // Returns [{ url, label }]. Powers the image control's "choose existing"
+  // action so a logo/portrait/cover can be reused without re-uploading. No new
+  // storage library or backend — it only surfaces images already in the doc.
+  var imageSource = null;
+  function setImageSource(fn) { imageSource = (typeof fn === 'function') ? fn : null; }
+
   // format label → { accept fragment, extensions }
   var FILE_FORMATS = {
     PDF:  { accept: '.pdf,application/pdf', ext: ['pdf'] },
@@ -138,10 +145,12 @@
     var input = el('input', { type: 'file', accept: IMAGE_ACCEPT, hidden: 'hidden' });
     var btnUpload = el('button', { type: 'button', class: 'btn btn-ghost btn-sm', text: 'رفع صورة' });
     var btnReplace = el('button', { type: 'button', class: 'btn btn-ghost btn-sm', text: 'استبدال' });
+    var btnPick = el('button', { type: 'button', class: 'btn btn-ghost btn-sm', text: 'اختيار من صور الموقع' });
     var btnRemove = el('button', { type: 'button', class: 'btn btn-ghost btn-sm media-remove', text: 'إزالة' });
-    var actions = el('div', { class: 'media-actions' }, [btnUpload, btnReplace, btnRemove]);
+    var actions = el('div', { class: 'media-actions' }, [btnUpload, btnReplace, btnPick, btnRemove]);
     var err = el('div', { class: 'media-err' });
-    var body = el('div', { class: 'media-body' }, [meta, actions, err]);
+    var picker = el('div', { class: 'media-picker', hidden: 'hidden' });
+    var body = el('div', { class: 'media-body' }, [meta, actions, err, picker]);
     var wrap = el('div', { class: 'media media-image' }, [preview, body, input]);
 
     function setErr(m) { err.textContent = m || ''; wrap.classList.toggle('has-err', !!m); }
@@ -179,8 +188,35 @@
       });
     }
 
+    // "Choose existing" — a compact in-place gallery of images already used
+    // elsewhere in the site (provided by the host). Selecting one reuses its URL
+    // through the same onChange path as an upload — no new storage/library.
+    function closePicker() { picker.hidden = true; picker.textContent = ''; }
+    function openPicker() {
+      var list = (typeof imageSource === 'function') ? (imageSource() || []) : [];
+      var seen = {}, uniq = [];
+      list.forEach(function (it) { if (it && it.url && !seen[it.url]) { seen[it.url] = 1; uniq.push(it); } });
+      picker.textContent = '';
+      if (!uniq.length) {
+        picker.appendChild(el('div', { class: 'media-picker-empty', text: 'لا توجد صور مستخدمة في الموقع بعد — ارفع صورة أولًا.' }));
+      } else {
+        var grid = el('div', { class: 'media-picker-grid' });
+        uniq.forEach(function (it) {
+          var thumb = el('img', { alt: it.label || '' });
+          thumb.src = previewSrc(it.url); thumb.loading = 'lazy';
+          var b = el('button', { type: 'button', class: 'media-pick-item', title: it.label || '' }, [thumb]);
+          if (it.url === current) b.classList.add('is-current');
+          b.onclick = function () { current = it.url; setErr(''); onChange(current); closePicker(); render(); };
+          grid.appendChild(b);
+        });
+        picker.appendChild(grid);
+      }
+      picker.hidden = false;
+    }
+
     btnUpload.onclick = btnReplace.onclick = function () { input.click(); };
-    btnRemove.onclick = function () { current = ''; setErr(''); onChange(''); render(); };
+    btnPick.onclick = function () { if (picker.hidden) openPicker(); else closePicker(); };
+    btnRemove.onclick = function () { current = ''; setErr(''); onChange(''); closePicker(); render(); };
     input.onchange = function () { var f = input.files && input.files[0]; if (f) ingest(f); input.value = ''; };
     preview.addEventListener('click', function () { if (!current) input.click(); });
     ['dragenter', 'dragover'].forEach(function (ev) {
@@ -287,5 +323,5 @@
     return kind === 'file' ? !(value && value.src) : !(typeof value === 'string' && value);
   }
 
-  window.MediaManager = { create: create, isEmpty: isEmpty };
+  window.MediaManager = { create: create, isEmpty: isEmpty, setImageSource: setImageSource };
 })();

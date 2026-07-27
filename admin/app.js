@@ -93,8 +93,36 @@
    * unauthenticated visitor sees the login screen first. When Supabase is not
    * configured (credentials not filled in yet), the CMS still opens on the
    * bundled config (read-only) so the workflow is unchanged for setup. */
+  /* ── Existing-image source for the Media Manager ──────────────────────────
+   * Walks the schema over the working document and collects every image-typed
+   * field's current value (including images inside lists). This powers the
+   * shared image control's "choose existing" action so a logo/portrait/cover
+   * can be reused without re-uploading — no separate media library or backend. */
+  function collectDocImages() {
+    var doc = state.doc;
+    if (!doc) return [];
+    var out = [];
+    function join(b, k) { return b ? b + '.' + k : k; }
+    function walk(fields, base) {
+      (fields || []).forEach(function (node) {
+        var path = join(base, node.key);
+        if (node.type === 'group') walk(node.fields, path);
+        else if (node.type === 'list') {
+          var arr = FE.getPath(doc, path);
+          if (Array.isArray(arr) && !node.strings) arr.forEach(function (_, i) { walk(node.fields, path + '.' + i); });
+        } else if (node.type === 'image') {
+          var v = FE.getPath(doc, path);
+          if (typeof v === 'string' && v) out.push({ url: v, label: node.label });
+        }
+      });
+    }
+    SECTIONS.forEach(function (sec) { walk(sec.fields, sec.base); });
+    return out;
+  }
+
   function start() {
     wireChrome();
+    if (window.MediaManager && window.MediaManager.setImageSource) window.MediaManager.setImageSource(collectDocImages);
     gate();
   }
 
