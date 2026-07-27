@@ -186,6 +186,12 @@ window.CMS_SCHEMA = (function () {
       ] }
     ] },
 
+    { id: 'latestArticles', group: 'content', label: 'أحدث المقالات', desc: 'قسم أحدث المقالات في الصفحة الرئيسية (يعرض آخر 3 مقالات منشورة).', base: 'content.latestArticles', fields: [
+      { type: 'checkbox', key: 'enabled', label: 'إظهار القسم', hint: 'عند إيقافه يختفي القسم. يظهر تلقائيًا فقط عند وجود مقالات منشورة.' },
+      { type: 'text', key: 'title', label: 'العنوان' },
+      { type: 'text', key: 'viewAllLabel', label: 'نص زر «عرض كل المقالات»' }
+    ] },
+
     { id: 'footer', group: 'content', label: 'التذييل', desc: 'أعمدة الروابط أسفل الموقع.', base: 'footer', fields: [
       { type: 'list', key: 'columns', label: 'الأعمدة', itemLabel: 'عمود', addLabel: 'إضافة عمود', titleKey: 'title', fields: [
         { type: 'text', key: 'title', label: 'عنوان العمود' },

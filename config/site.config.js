@@ -242,6 +242,13 @@
       body: '',
       showDescription: false,              // show / hide the description
       items: []                            // { logo, name, url?, alt, order, hidden } — added from the CMS
+    },
+
+    // 8 — Latest Articles (homepage section; renders via config/content-cards.js)
+    latestArticles: {
+      enabled: true,                       // show / hide the section
+      title: 'أحدث المقالات',
+      viewAllLabel: 'عرض كل المقالات'      // label of the button linking to Articles.dc.html
     }
   };
 

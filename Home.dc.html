@@ -10,6 +10,8 @@
 <script src="./config/cms-overlay.js"></script>
 <!-- Shared consultation card renderer — the single source used by Home AND the Consulting page. -->
 <script src="./config/consultation-cards.js"></script>
+<!-- Reusable content-card renderer (articles today; extensible to other card content). -->
+<script src="./config/content-cards.js"></script>
 <script src="./support.js"></script>
 <!-- Shared Header + Footer — the single source of the site chrome. -->
 <script src="./config/site-chrome.js?v=20260727b"></script>
@@ -194,6 +196,9 @@
   <!-- ORGANIZATIONS slot (CMS position: before-closing) -->
   {{ orgBeforeClosing }}
 
+  <!-- LATEST ARTICLES — reusable content-card renderer (config/content-cards.js) -->
+  {{ latestArticles }}
+
   <!-- CLOSING CTA — shared final call-to-action (config/site-chrome.js) -->
   {{ siteClosing }}
 
@@ -358,6 +363,10 @@ class Component extends DCLogic {
     const orgPos = (c.content && c.content.organizations && c.content.organizations.position) || 'before-closing';
     const orgAt = (key) => (orgEl && orgPos === key) ? orgEl : null;
 
+    // Latest Articles homepage section — reusable content-card renderer.
+    const latestArticles = (window.ContentCards && window.ContentCards.renderLatestSection)
+      ? window.ContentCards.renderLatestSection(c) : null;
+
     const T = c.theme.color;
     // "Available Consultations" cards — from the SHARED renderer, the same
     // single source the Consulting page uses (no duplicated data or markup).
@@ -389,6 +398,7 @@ class Component extends DCLogic {
       orgAfterStats: orgAt('after-stats'),
       orgAfterWhy: orgAt('after-why'),
       orgBeforeClosing: orgAt('before-closing'),
+      latestArticles,
       consultationsGrid,
       hasConsultations: !!consultationsGrid,
       brand: c.brand,
