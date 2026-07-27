@@ -27,6 +27,42 @@
 <meta name="twitter:description" content="أعمل مع أصحاب الأعمال لتحويل التحديات إلى خطوات عملية قابلة للتنفيذ، وفرص للنمو والتحسين.">
 <meta name="twitter:image" content="https://saudalabdan.com/uploads/social-preview.png">
 <meta name="twitter:image:alt" content="سعود العبدان — استشارات استراتيجية لصناع القرار">
+<!-- Structured data (JSON-LD) — apex domain is canonical throughout. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://saudalabdan.com/#person",
+      "name": "سعود العبدان",
+      "alternateName": "Saud AlAbdan",
+      "url": "https://saudalabdan.com/",
+      "image": "https://saudalabdan.com/uploads/social-preview.png",
+      "jobTitle": "مستشار أعمال استراتيجي",
+      "description": "أعمل مع أصحاب الأعمال لتحويل التحديات إلى خطوات عملية قابلة للتنفيذ، وفرص للنمو والتحسين."
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://saudalabdan.com/#website",
+      "url": "https://saudalabdan.com/",
+      "name": "سعود العبدان",
+      "inLanguage": "ar",
+      "publisher": { "@id": "https://saudalabdan.com/#person" }
+    },
+    {
+      "@type": "ProfessionalService",
+      "@id": "https://saudalabdan.com/#service",
+      "name": "سعود العبدان — استشارات استراتيجية",
+      "url": "https://saudalabdan.com/",
+      "image": "https://saudalabdan.com/uploads/social-preview.png",
+      "description": "استشارات استراتيجية لصناع القرار وأصحاب الأعمال.",
+      "areaServed": "SA",
+      "provider": { "@id": "https://saudalabdan.com/#person" }
+    }
+  ]
+}
+</script>
 <!-- CMS integration: apply saved CMS content over the config source. Must run
      before the runtime boots. No-op when nothing has been saved. -->
 <script src="./config/supabase.config.js"></script>
