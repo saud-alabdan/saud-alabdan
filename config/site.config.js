@@ -213,11 +213,20 @@
       ]
     },
 
-    // 6 — Final CTA
+    // 6 — Final CTA (shared, fully CMS-managed component — see config/site-chrome.js)
     closingCta: {
+      enabled: true,                       // show / hide the whole section
       title: 'هل لديك قرار يحتاج إلى وضوح؟',
       body: 'احجز جلسة استشارية أولى وابدأ بخطوة واضحة نحو الحل.',
-      button: { label: 'احجز استشارتك الآن' }
+      button: {
+        label: 'احجز استشارتك الآن',
+        destinationType: 'whatsapp',       // whatsapp | email | internal | external
+        destination: ''                    // used by internal (page) / external (url)
+      },
+      // Appearance — design tokens only (no hardcoded colours):
+      background: 'primary',               // primary | secondary | light | dark | transparent
+      textStyle: 'auto',                   // auto | light | dark
+      buttonStyle: 'primary'               // primary | secondary | outline | ghost
     }
   };
 

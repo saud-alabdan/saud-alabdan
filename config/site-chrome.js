@@ -42,12 +42,16 @@
     return {
       ink: C.ink || '#232323',
       bg: C.bg || '#F7F5F2',
+      surface: C.surface || '#FCFBF8',
+      body: C.body || '#5F5951',
       primary: C.primary || '#48553F',
       accent: C.accent || '#A57A4C',
       muted: C.muted || '#8A837A',
       line: C.line || '#E6E0D8',
       lineSoft: C.lineSoft || '#EDE8E1',
-      onDark: C.onDark || '#FCFBF8'
+      dark: C.dark || '#2A2A28',
+      onDark: C.onDark || '#FCFBF8',
+      onDarkDim: C.onDarkDim || '#D6D2C6'
     };
   }
 
@@ -206,33 +210,96 @@
     return !!document.querySelector('script[src*="whatsapp-button.js"]');
   }
 
-  // Shared final call-to-action — one CMS-managed section (content.closingCta)
-  // used consistently by every content page. Destination is the single
-  // consultation action (whatsapp/mailto), same source as every booking CTA.
+  // Background style -> a section background token + whether it reads as "dark".
+  // Colours come only from the theme tokens (no hardcoded colours here).
+  function bgFor(name, k) {
+    switch (name) {
+      case 'secondary':   return { bg: k.accent,     dark: true };
+      case 'light':       return { bg: k.surface,    dark: false };
+      case 'dark':        return { bg: k.dark,       dark: true };
+      case 'transparent': return { bg: 'transparent', dark: false };
+      case 'primary':
+      default:            return { bg: k.primary,    dark: true };
+    }
+  }
+
+  // Button style -> inline layout + token colours, adapted to the background so
+  // the button always reads correctly. Hover (lift) lives in the stylesheet.
+  function buttonStyleFor(name, onDarkBg, k) {
+    var base = { display: 'inline-flex', alignItems: 'center', gap: '10px', padding: '18px 44px', borderRadius: '14px', textDecoration: 'none', fontSize: '16px', border: '1px solid transparent' };
+    var contrast = onDarkBg ? k.onDark : k.primary;
+    switch (name) {
+      case 'secondary':
+        return Object.assign({}, base, { background: k.accent, color: k.onDark, border: '1px solid ' + k.accent });
+      case 'outline':
+        return Object.assign({}, base, { background: 'transparent', color: contrast, border: '1px solid ' + contrast });
+      case 'ghost':
+        return Object.assign({}, base, { background: 'transparent', color: contrast });
+      case 'primary':
+      default:
+        // On a dark background the high-emphasis button inverts to a light fill
+        // (the site's established closing-CTA look); on a light background it
+        // fills with the primary token.
+        return onDarkBg
+          ? Object.assign({}, base, { background: k.onDark, color: k.ink, border: '1px solid #E1D8C9' })
+          : Object.assign({}, base, { background: k.primary, color: k.onDark, border: '1px solid ' + k.primary });
+    }
+  }
+
+  // Button destination — WhatsApp (the single consultation action), Email
+  // (single-source contact email), an internal page, or an external URL.
+  function closingDestination(cfg, cc) {
+    var btn = (cc && cc.button) || {};
+    var type = btn.destinationType || 'whatsapp';
+    var dest = (btn.destination || '').trim();
+    if (type === 'email') return { href: 'mailto:' + ((cfg.contact && cfg.contact.email) || ''), target: undefined };
+    if (type === 'internal') return { href: dest || 'Contact.dc.html', target: undefined };
+    if (type === 'external') return { href: dest || '#', target: '_blank' };
+    return ctaLink(cfg); // whatsapp (with mailto fallback) — the default
+  }
+
+  // Shared final call-to-action — ONE CMS-managed component (content.closingCta)
+  // used by every content page. Fully content-driven: show/hide, title, body,
+  // button label + destination, and a token-only appearance (background / text /
+  // button style). Returns null when hidden, so the page reserves no height and
+  // the footer moves up. Defaults reproduce the site's established look.
   function renderClosingCta(cfg) {
     if (!cfg) return null;
+    var cc = (cfg.content && cfg.content.closingCta) || {};
+    if (cc.enabled === false) return null; // show / hide (absent = visible)
     var k = colors(cfg);
     ensureStyle(k);
-    var cc = (cfg.content && cfg.content.closingCta) || {};
-    var action = ctaLink(cfg);
+
+    var b = bgFor(cc.background, k);
+    var onDarkBg = b.dark;
+    // Text style: 'auto' (default) follows the background; light/dark force it.
+    var textLight = (cc.textStyle === 'light') ? true : (cc.textStyle === 'dark') ? false : onDarkBg;
+    var titleColor = textLight ? k.onDark : k.ink;
+    var bodyColor = textLight ? k.onDarkDim : k.body;
+
+    var action = closingDestination(cfg, cc);
+    var btnStyle = buttonStyleFor(cc.buttonStyle, onDarkBg, k);
+
+    var kids = [];
+    // The subtle grid + glow belong to the dark treatments (original design);
+    // they add nothing on a light/transparent background, so skip them there.
+    if (onDarkBg) {
+      kids.push(h('div', { key: 'grid', 'aria-hidden': 'true', style: { position: 'absolute', inset: 0, zIndex: 0, backgroundImage: 'linear-gradient(rgba(252,251,248,0.5) 0.5px, transparent 0.5px), linear-gradient(90deg, rgba(252,251,248,0.5) 0.5px, transparent 0.5px)', backgroundSize: '72px 72px', opacity: 0.025 } }));
+      kids.push(h('div', { key: 'glow', 'aria-hidden': 'true', style: { position: 'absolute', top: '30%', left: '50%', width: 'min(760px,92%)', height: '400px', transform: 'translate(-50%,-50%)', zIndex: 0, background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0) 70%)', pointerEvents: 'none' } }));
+    }
+    kids.push(h('div', { key: 'inner', style: { position: 'relative', zIndex: 1, maxWidth: '820px', margin: '0 auto' } },
+      h('h2', { style: { fontFamily: FONT, fontWeight: 600, fontSize: 'clamp(28px,4vw,42px)', lineHeight: 1.4, margin: '0 0 32px', textWrap: 'pretty', color: titleColor } }, cc.title || ''),
+      h('p', { style: { fontSize: '16px', lineHeight: 1.9, color: bodyColor, maxWidth: '600px', margin: '0 auto 52px' } }, cc.body || ''),
+      h('a', { href: action.href, target: action.target, rel: 'noopener', className: 'sc-closing-btn', style: btnStyle },
+        h('span', { key: 'l' }, (cc.button && cc.button.label) || ''),
+        h('span', { key: 'a', 'aria-hidden': 'true' }, '←')
+      )
+    ));
+
     return h('section', {
       id: 'contact', 'data-reveal': 'up',
-      style: { position: 'relative', overflow: 'hidden', background: k.primary, color: k.onDark, padding: 'clamp(80px,11vw,140px) clamp(20px,6vw,64px)', textAlign: 'center', opacity: 0, transform: 'translateY(16px)', transition: 'opacity 1s cubic-bezier(0.22,0.61,0.36,1), transform 1s cubic-bezier(0.22,0.61,0.36,1)' }
-    },
-      h('div', { key: 'grid', 'aria-hidden': 'true', style: { position: 'absolute', inset: 0, zIndex: 0, backgroundImage: 'linear-gradient(rgba(252,251,248,0.5) 0.5px, transparent 0.5px), linear-gradient(90deg, rgba(252,251,248,0.5) 0.5px, transparent 0.5px)', backgroundSize: '72px 72px', opacity: 0.025 } }),
-      h('div', { key: 'glow', 'aria-hidden': 'true', style: { position: 'absolute', top: '30%', left: '50%', width: 'min(760px,92%)', height: '400px', transform: 'translate(-50%,-50%)', zIndex: 0, background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0) 70%)', pointerEvents: 'none' } }),
-      h('div', { key: 'inner', style: { position: 'relative', zIndex: 1, maxWidth: '820px', margin: '0 auto' } },
-        h('h2', { style: { fontFamily: FONT, fontWeight: 600, fontSize: 'clamp(28px,4vw,42px)', lineHeight: 1.4, margin: '0 0 32px', textWrap: 'pretty' } }, cc.title || ''),
-        h('p', { style: { fontSize: '16px', lineHeight: 1.9, color: '#D6D2C6', maxWidth: '600px', margin: '0 auto 52px' } }, cc.body || ''),
-        h('a', {
-          href: action.href, target: action.target, rel: 'noopener', className: 'sc-closing-btn',
-          style: { display: 'inline-flex', alignItems: 'center', gap: '10px', background: k.onDark, color: k.ink, padding: '18px 44px', border: '1px solid #E1D8C9', borderRadius: '14px', textDecoration: 'none', fontSize: '16px' }
-        },
-          h('span', { key: 'l' }, (cc.button && cc.button.label) || ''),
-          h('span', { key: 'a', 'aria-hidden': 'true' }, '←')
-        )
-      )
-    );
+      style: { position: 'relative', overflow: 'hidden', background: b.bg, color: titleColor, padding: 'clamp(80px,11vw,140px) clamp(20px,6vw,64px)', textAlign: 'center', opacity: 0, transform: 'translateY(16px)', transition: 'opacity 1s cubic-bezier(0.22,0.61,0.36,1), transform 1s cubic-bezier(0.22,0.61,0.36,1)' }
+    }, kids);
   }
 
   function vals(cfg) {

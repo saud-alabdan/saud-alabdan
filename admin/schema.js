@@ -19,6 +19,12 @@ window.CMS_SCHEMA = (function () {
   var PERIOD = [['session', 'لكل جلسة'], ['month', 'شهري'], ['once', 'مرة واحدة']];
   var ICONS = [['calendar', 'تقويم'], ['messages', 'محادثة'], ['clipboard', 'قائمة'], ['handshake', 'مصافحة']];
   var SOCIAL_TYPES = [['linkedin', 'LinkedIn'], ['x', 'X'], ['instagram', 'Instagram'], ['email', 'البريد']];
+  // Closing CTA option sets — appearance values map to the site's design tokens
+  // (no free colour input); destination selects where the button points.
+  var CTA_DEST = [['whatsapp', 'واتساب'], ['email', 'البريد الإلكتروني'], ['internal', 'صفحة داخلية'], ['external', 'رابط خارجي']];
+  var CTA_BG = [['primary', 'أساسي'], ['secondary', 'ثانوي'], ['light', 'فاتح'], ['dark', 'داكن'], ['transparent', 'شفاف']];
+  var CTA_TEXT = [['auto', 'تلقائي'], ['light', 'فاتح'], ['dark', 'داكن']];
+  var CTA_BTN = [['primary', 'أساسي'], ['secondary', 'ثانوي'], ['outline', 'محدد'], ['ghost', 'شبح']];
   var CTA = { type: 'group', key: 'cta', label: 'زر الإجراء', fields: [
     { type: 'text', key: 'label', label: 'النص' },
     { type: 'text', key: 'href', label: 'الرابط' }
@@ -141,9 +147,17 @@ window.CMS_SCHEMA = (function () {
     ] },
 
     { id: 'closing', group: 'content', label: 'الدعوة الختامية', desc: 'قسم الحث على الحجز في نهاية الصفحة.', base: 'content.closingCta', fields: [
+      { type: 'checkbox', key: 'enabled', label: 'إظهار القسم', hint: 'عند إيقافه يختفي القسم تمامًا ويرتفع التذييل دون ترك فراغ.' },
       { type: 'text', key: 'title', label: 'العنوان' },
       { type: 'textarea', key: 'body', label: 'النص' },
-      { type: 'group', key: 'button', label: 'الزر', fields: [{ type: 'text', key: 'label', label: 'النص' }] }
+      { type: 'group', key: 'button', label: 'الزر', fields: [
+        { type: 'text', key: 'label', label: 'النص' },
+        { type: 'select', key: 'destinationType', label: 'وجهة الزر', options: CTA_DEST, hint: 'واتساب/البريد: يُشتقّان من الإعدادات. صفحة داخلية/رابط خارجي: يستخدمان حقل «الوجهة».' },
+        { type: 'text', key: 'destination', label: 'الوجهة (صفحة داخلية أو رابط خارجي)', hint: 'مثال: Contact.dc.html أو https://example.com' }
+      ] },
+      { type: 'select', key: 'background', label: 'نمط الخلفية', options: CTA_BG, hint: 'من ألوان الهوية فقط.' },
+      { type: 'select', key: 'textStyle', label: 'نمط النص', options: CTA_TEXT, hint: 'تلقائي: يتباين مع الخلفية.' },
+      { type: 'select', key: 'buttonStyle', label: 'نمط الزر', options: CTA_BTN }
     ] },
 
     { id: 'footer', group: 'content', label: 'التذييل', desc: 'أعمدة الروابط أسفل الموقع.', base: 'footer', fields: [
