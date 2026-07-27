@@ -64,10 +64,44 @@
     var s = document.createElement('style');
     s.id = STYLE_ID;
     s.textContent =
-      '.sc-nav-link{color:inherit;text-decoration:none;background-image:linear-gradient(' + k.accent + ',' + k.accent + ');background-repeat:no-repeat;background-position:0 100%;background-size:0% 1px;transition:background-size .35s ease,color .35s ease;}' +
-      '.sc-nav-link:hover{background-size:100% 1px;color:' + k.ink + ';}' +
-      '.sc-cta{color:' + k.primary + ';text-decoration:none;border:1px solid ' + k.primary + ';border-radius:2px;transition:background .3s ease,color .3s ease,border-color .3s ease;}' +
-      '.sc-cta:hover{background:' + k.primary + ';color:' + k.onDark + ';border-color:' + k.primary + ';}' +
+      // Header shell — aligned to the hero grid, calm proportions, hairline on scroll.
+      '.sc-site-header{position:sticky;top:0;z-index:50;background:' + k.surface + ';border-bottom:1px solid transparent;transition:border-color .3s ease;}' +
+      '.sc-site-header.sc-scrolled{border-bottom-color:' + k.line + ';}' +
+      '.sc-header-inner{max-width:1360px;margin:0 auto;padding:clamp(15px,1.9vw,19px) clamp(24px,6vw,72px);display:flex;align-items:center;justify-content:space-between;gap:24px;}' +
+      '.sc-brand{font-family:' + FONT + ';font-size:20px;font-weight:600;color:' + k.ink + ';text-decoration:none;white-space:nowrap;}' +
+      '.sc-brand:focus-visible{outline:2px solid ' + k.accent + ';outline-offset:4px;border-radius:2px;}' +
+      '.sc-end{display:flex;align-items:center;gap:clamp(18px,2.4vw,36px);}' +
+      '.sc-desktop-nav{display:flex;align-items:center;gap:clamp(22px,2.6vw,40px);}' +
+      // Nav links — thin accent underline on hover / active (grows from inline-start).
+      '.sc-nav-link{position:relative;color:' + LINK_GRAY + ';font-size:15px;font-weight:500;text-decoration:none;padding:6px 1px;transition:color .3s ease;}' +
+      '.sc-nav-link::after{content:"";position:absolute;inset-inline-start:0;bottom:0;height:1px;width:0;background:' + k.accent + ';transition:width .35s cubic-bezier(0.22,0.61,0.36,1);}' +
+      '.sc-nav-link:hover{color:' + k.ink + ';}' +
+      '.sc-nav-link:hover::after,.sc-nav-link.is-active::after{width:100%;}' +
+      '.sc-nav-link.is-active{color:' + k.ink + ';}' +
+      '.sc-nav-link:focus-visible{outline:2px solid ' + k.accent + ';outline-offset:4px;border-radius:2px;}' +
+      // CTA — quiet outlined (does not compete with the hero solid CTA).
+      '.sc-cta{color:' + k.primary + ';font-size:14px;font-weight:500;text-decoration:none;border:1px solid ' + k.primary + ';border-radius:3px;padding:11px 26px;white-space:nowrap;transition:background .3s ease,color .3s ease;}' +
+      '.sc-cta:hover{background:' + k.primary + ';color:' + k.onDark + ';}' +
+      '.sc-cta:focus-visible{outline:2px solid ' + k.accent + ';outline-offset:3px;}' +
+      // Hamburger — minimal, morphs to an X when open.
+      '.sc-menu-toggle{display:none;flex:0 0 auto;width:44px;height:44px;margin-inline-end:-10px;border:0;background:transparent;cursor:pointer;align-items:center;justify-content:center;color:' + k.ink + ';}' +
+      '.sc-menu-toggle i{position:relative;width:22px;height:1.5px;background:currentColor;display:block;transition:background .2s ease;}' +
+      '.sc-menu-toggle i::before,.sc-menu-toggle i::after{content:"";position:absolute;inset-inline-start:0;width:22px;height:1.5px;background:currentColor;transition:transform .3s ease;}' +
+      '.sc-menu-toggle i::before{top:-7px;}' +
+      '.sc-menu-toggle i::after{top:7px;}' +
+      '.sc-site-header.sc-open .sc-menu-toggle i{background:transparent;}' +
+      '.sc-site-header.sc-open .sc-menu-toggle i::before{transform:translateY(7px) rotate(45deg);}' +
+      '.sc-site-header.sc-open .sc-menu-toggle i::after{transform:translateY(-7px) rotate(-45deg);}' +
+      '.sc-mobile-menu{display:none;}' +
+      '@media (max-width:768px){' +
+        '.sc-desktop-nav{display:none;}' +
+        '.sc-menu-toggle{display:inline-flex;}' +
+        '.sc-mobile-menu{position:absolute;left:0;right:0;top:100%;flex-direction:column;background:' + k.surface + ';border-bottom:1px solid ' + k.line + ';padding:4px clamp(24px,6vw,72px) 22px;box-shadow:0 20px 32px -26px rgba(0,0,0,0.28);}' +
+        '.sc-site-header.sc-open .sc-mobile-menu{display:flex;}' +
+        '.sc-m-link{color:' + k.ink + ';font-size:16px;font-weight:500;text-decoration:none;padding:17px 0;border-bottom:1px solid ' + k.lineSoft + ';transition:color .25s ease;}' +
+        '.sc-m-link:hover{color:' + k.accent + ';}' +
+        '.sc-m-cta{margin-top:18px;display:inline-flex;align-items:center;justify-content:center;color:' + k.onDark + ';background:' + k.primary + ';border-radius:3px;padding:15px 26px;font-size:15px;font-weight:500;text-decoration:none;}' +
+      '}' +
       '.sc-foot-link{color:' + LINK_GRAY + ';text-decoration:none;transition:color .3s ease;}' +
       '.sc-foot-link:hover{color:' + k.ink + ';}' +
       '.sc-social{color:' + LINK_GRAY + ';border:1px solid ' + k.lineSoft + ';transition:color .3s ease,border-color .3s ease;}' +
@@ -106,6 +140,22 @@
     return { href: 'mailto:' + ((cfg.contact && cfg.contact.email) || ''), target: undefined };
   }
 
+  // Mobile menu open/close — a plain class toggle on the header (no framework
+  // state), so it survives the DC runtime's re-renders. Minimal, no library.
+  function toggleMenu(e) {
+    var hdr = e.currentTarget.closest('.sc-site-header');
+    if (!hdr) return;
+    var open = hdr.classList.toggle('sc-open');
+    e.currentTarget.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  function closeMenu(e) {
+    var hdr = e.currentTarget.closest('.sc-site-header');
+    if (!hdr) return;
+    hdr.classList.remove('sc-open');
+    var t = hdr.querySelector('.sc-menu-toggle');
+    if (t) t.setAttribute('aria-expanded', 'false');
+  }
+
   function renderHeader(cfg, pid) {
     if (!cfg) return null;
     var k = colors(cfg);
@@ -115,28 +165,31 @@
     var primary = nav.primary || [];
     var cta = nav.cta || {};
     var action = ctaLink(cfg);
+    var ctaLabel = cta.label || 'احجز استشارة';
+    function spyOf(href) { return (href && href.charAt(0) === '#') ? href.slice(1) : undefined; }
 
-    var brandEl = h('a', {
-      href: 'Home.dc.html',
-      style: { fontFamily: FONT, fontSize: '22px', fontWeight: 600, letterSpacing: '0.5px', color: k.ink, textDecoration: 'none' }
-    }, brand.name || '');
+    var brandEl = h('a', { className: 'sc-brand', href: 'Home.dc.html' }, brand.name || '');
 
-    var links = primary.map(function (it, i) {
-      return h('a', { key: i, className: 'sc-nav-link', href: navHref(it.href, pid) }, it.label);
+    // Desktop nav — links + one quiet outlined CTA.
+    var deskLinks = primary.map(function (it, i) {
+      return h('a', { key: i, className: 'sc-nav-link', href: navHref(it.href, pid), 'data-spy': spyOf(it.href) }, it.label);
     });
-    links.push(h('a', {
-      key: 'cta', className: 'sc-cta', href: action.href, target: action.target, rel: 'noopener',
-      style: { padding: '10px 22px', fontSize: '14px', whiteSpace: 'nowrap', flex: '0 0 auto' }
-    }, cta.label || 'احجز استشارة'));
+    deskLinks.push(h('a', { key: 'cta', className: 'sc-cta', href: action.href, target: action.target, rel: 'noopener' }, ctaLabel));
+    var desktopNav = h('nav', { className: 'sc-desktop-nav', 'aria-label': 'التنقل الرئيسي' }, deskLinks);
 
-    var navEl = h('nav', {
-      style: { display: 'flex', alignItems: 'center', gap: 'clamp(16px,3vw,40px)', flexWrap: 'wrap', fontSize: '15px', color: LINK_GRAY }
-    }, links);
+    var toggle = h('button', { type: 'button', className: 'sc-menu-toggle', 'aria-label': 'القائمة', 'aria-expanded': 'false', onClick: toggleMenu }, h('i', { 'aria-hidden': 'true' }));
 
-    return h('header', {
-      className: 'sc-site-header',
-      style: { position: 'sticky', top: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px', flexWrap: 'wrap', padding: '24px clamp(20px,6vw,64px)', background: k.bg, transition: 'box-shadow .35s ease' }
-    }, brandEl, navEl);
+    // Mobile menu — stacked links + one CTA; each closes the menu on tap.
+    var mLinks = primary.map(function (it, i) {
+      return h('a', { key: i, className: 'sc-m-link', href: navHref(it.href, pid), 'data-spy': spyOf(it.href), onClick: closeMenu }, it.label);
+    });
+    mLinks.push(h('a', { key: 'cta', className: 'sc-m-cta', href: action.href, target: action.target, rel: 'noopener', onClick: closeMenu }, ctaLabel));
+    var mobileMenu = h('nav', { className: 'sc-mobile-menu', 'aria-label': 'قائمة الجوال' }, mLinks);
+
+    return h('header', { className: 'sc-site-header' },
+      h('div', { className: 'sc-header-inner' }, brandEl, h('div', { className: 'sc-end' }, desktopNav, toggle)),
+      mobileMenu
+    );
   }
 
   function renderFooter(cfg, pid) {
@@ -398,16 +451,32 @@
     })();
   }
 
-  // Sticky-header shadow on scroll — one global listener, re-queried each tick
-  // so it survives component re-renders. Matches the canonical Home behaviour.
+  // Sticky-header: a subtle hairline appears on scroll (no shadow). One global
+  // listener, re-queried each tick so it survives component re-renders.
   function initScroll() {
     var apply = function () {
       var el = document.querySelector('.sc-site-header');
-      if (el) el.style.boxShadow = (window.scrollY > 24) ? '0 1px 0 #E6E0D8' : 'none';
+      if (el) el.classList.toggle('sc-scrolled', window.scrollY > 4);
     };
     window.addEventListener('scroll', apply, { passive: true });
     apply();
   }
+  // Active nav state — hash-driven (no scroll-spy, no per-frame work). Reflects
+  // the current section link after navigation. Re-queried at call time so it
+  // works once the DC runtime has rendered the header.
+  function applyActive() {
+    var links = document.querySelectorAll('.sc-nav-link[data-spy]');
+    if (!links.length) return false;
+    var hash = location.hash;
+    links.forEach(function (l) {
+      var on = ('#' + l.getAttribute('data-spy')) === hash;
+      l.classList.toggle('is-active', on);
+      if (on) l.setAttribute('aria-current', 'page'); else l.removeAttribute('aria-current');
+    });
+    return true;
+  }
+  window.addEventListener('hashchange', applyActive);
+  (function retryActive(n) { if (applyActive() || n <= 0) return; setTimeout(function () { retryActive(n - 1); }, 120); })(24);
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initScroll);
   else initScroll();
 
