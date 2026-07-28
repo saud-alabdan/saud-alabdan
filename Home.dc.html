@@ -132,7 +132,7 @@
     @media (min-width: 900px) {
       #hero-grid { grid-template-columns: 0.98fr 1.02fr !important; align-items: end !important; column-gap: clamp(40px,4.5vw,84px) !important; }
       #hero-copy { grid-column: 1 !important; padding-bottom: clamp(60px,6.5vw,100px) !important; }
-      #hero-figure { grid-column: 2 !important; max-width: min(46vw, calc(clamp(390px,42vw,520px) * var(--portrait-scale,1))) !important; justify-self: center !important; }
+      #hero-figure { grid-column: 2 !important; max-width: clamp(390px,42vw,520px) !important; justify-self: center !important; }
     }
   </style>
 </helmet>
@@ -157,7 +157,7 @@
           <span>{{ hero.ctaLabel }}</span><span aria-hidden="true">←</span>
         </a>
       </div>
-      <div id="hero-figure" style="grid-column:1; position:relative; align-self:end; justify-self:center; width:100%; max-width:min(92%, calc(min(82%,392px) * var(--portrait-scale,1))); z-index:1;">
+      <div id="hero-figure" style="grid-column:1; position:relative; align-self:end; justify-self:center; width:100%; max-width:min(82%,392px); transform:scale(var(--portrait-scale,1)); transform-origin:bottom center; z-index:1;">
         <!-- whisper-quiet tonal field behind the portrait — a plane, not a box -->
         <div aria-hidden="true" style="position:absolute; left:50%; top:4%; width:132%; height:98%; transform:translateX(-50%); z-index:0; pointer-events:none; background:radial-gradient(ellipse 46% 56% at 50% 46%, rgba(180,158,128,0.13) 0%, rgba(180,158,128,0.04) 46%, rgba(180,158,128,0) 74%);"></div>
         <!-- contact shadow — the portrait rests on the horizon line -->

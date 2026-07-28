@@ -109,8 +109,8 @@ window.CMS_SCHEMA = (function () {
       { type: 'text', key: 'titleLines.1', label: 'العنوان — السطر الثاني' },
       { type: 'textarea', key: 'body', label: 'النص التعريفي' },
       CTA,
-      { type: 'range', key: 'portraitScale', label: 'حجم الصورة الشخصية', min: 70, max: 130, step: 1, default: 100, suffix: '%',
-        hint: 'يتحكم في حجم الصورة الشخصية في الواجهة (٧٠٪ – ١٣٠٪). القيمة الافتراضية ١٠٠٪. يتكيّف تلقائيًا مع جميع الأحجام دون الإخلال بالتنسيق.' }
+      { type: 'range', key: 'portraitScale', label: 'حجم الصورة الشخصية', min: 70, max: 200, step: 1, default: 100, suffix: '%',
+        hint: 'يتحكم في حجم الصورة الشخصية في الواجهة (٧٠٪ – ٢٠٠٪). القيمة الافتراضية ١٠٠٪. يتكيّف تلقائيًا مع جميع الأحجام دون الإخلال بالتنسيق.' }
     ] },
 
     { id: 'topics', group: 'content', label: 'الموضوعات', desc: 'بطاقات القرارات التي تعمل عليها.', base: 'content.topics', fields: [
