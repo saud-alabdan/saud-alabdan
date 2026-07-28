@@ -12,6 +12,7 @@
   var GROUPS = window.CMS_SCHEMA.GROUPS;
   var SECTIONS = window.CMS_SCHEMA.SECTIONS;
   var SERVICES_DEFAULT = window.CMS_SCHEMA.SERVICES_DEFAULT;
+  var DIVIDERS_DEFAULT = window.CMS_SCHEMA.DIVIDERS_DEFAULT;
   var FE = window.FormEngine;
 
   var state = { doc: null, original: null, activeId: null };
@@ -139,6 +140,14 @@
     window.SiteContent.load().then(function (doc) {
       if (!doc.services) doc.services = clone(SERVICES_DEFAULT);
       if (!Array.isArray(doc.articles)) doc.articles = [];
+      // Seed Section Dividers defaults for documents saved before this feature,
+      // so the CMS controls open with correct values (non-destructive).
+      if (DIVIDERS_DEFAULT) {
+        if (!doc.content || typeof doc.content !== 'object') doc.content = {};
+        if (!doc.content.sectionDividers || typeof doc.content.sectionDividers !== 'object') {
+          doc.content.sectionDividers = clone(DIVIDERS_DEFAULT);
+        }
+      }
       migrateServices(doc);
       normalizeDoc(doc);
       state.original = clone(doc);

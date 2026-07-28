@@ -250,6 +250,23 @@
       enabled: true,                       // show / hide the section
       title: 'أحدث المقالات',
       viewAllLabel: 'عرض كل المقالات'      // label of the button linking to Articles.dc.html
+    },
+
+    // 9 — Section Dividers (reusable premium transition system — see
+    // config/section-dividers.js). Refines the flow BETWEEN existing sections;
+    // adds/removes no section. Fully CMS-managed. Values here are the defaults
+    // and MUST match config/section-dividers.js DEFAULTS so the look is identical
+    // whether or not a value was saved.
+    sectionDividers: {
+      enabled: true,                       // show / hide the whole system (off = original layout)
+      style: 'A',                          // A: minimal line · B: geometric scale · C: soft glow
+      opacity: 100,                        // overall presence (0–100%)
+      thickness: 1,                        // hairline / mark weight (px)
+      accentIntensity: 55,                 // olive saturation of the lines (0–100%)
+      ornament: true,                      // show / hide the centered ornament
+      density: 3,                          // number of ornamental marks / ticks / glow layers
+      spacingTop: 56,                      // space above the divider (px)
+      spacingBottom: 56                    // space below the divider (px)
     }
   };
 

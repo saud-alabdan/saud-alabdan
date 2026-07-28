@@ -32,6 +32,13 @@ window.CMS_SCHEMA = (function () {
   var ORG_POS = [['after-hero', 'أسفل الواجهة'], ['after-topics', 'بعد الموضوعات'], ['after-stats', 'بعد الأرقام'], ['after-why', 'بعد «لماذا أنا»'], ['before-closing', 'قبل الدعوة الختامية']];
   // Organizations logo size — maps to responsive dimensions in site-chrome.js.
   var ORG_SIZE = [['small', 'صغير'], ['medium', 'متوسط'], ['large', 'كبير'], ['xlarge', 'كبير جدًا']];
+  // Section Divider styles — each maps to a branch in config/section-dividers.js.
+  // Adding a new style later is one entry here + one branch there.
+  var DIVIDER_STYLE = [
+    ['A', 'أ — خط معماري بسيط'],
+    ['B', 'ب — خطوط هندسية متناظرة'],
+    ['C', 'ج — تدرّج زيتوني ناعم']
+  ];
   var CTA = { type: 'group', key: 'cta', label: 'زر الإجراء', fields: [
     { type: 'text', key: 'label', label: 'النص' },
     { type: 'text', key: 'href', label: 'الرابط' }
@@ -45,6 +52,15 @@ window.CMS_SCHEMA = (function () {
 
   // Default shape for the (new) services model when the loaded document has none.
   var SERVICES_DEFAULT = { consultations: [], products: [], courses: [] };
+
+  // Default Section Dividers config — seeded into documents saved before this
+  // feature existed, so the CMS controls open with correct values. MUST match
+  // config/site.config.js content.sectionDividers and section-dividers.js DEFAULTS.
+  var DIVIDERS_DEFAULT = {
+    enabled: true, style: 'A', opacity: 100, thickness: 1,
+    accentIntensity: 55, ornament: true, density: 3,
+    spacingTop: 56, spacingBottom: 56
+  };
 
   var SECTIONS = [
 
@@ -196,6 +212,25 @@ window.CMS_SCHEMA = (function () {
       { type: 'text', key: 'viewAllLabel', label: 'نص زر «عرض كل المقالات»' }
     ] },
 
+    { id: 'sectionDividers', group: 'content', label: 'الفواصل بين الأقسام',
+      desc: 'نظام فواصل راقٍ يحسّن انتقال العين بين الأقسام دون تغيير المحتوى أو التخطيط. يظهر في الصفحة الرئيسية.', base: 'content.sectionDividers', fields: [
+      { type: 'checkbox', key: 'enabled', label: 'تفعيل الفواصل', hint: 'عند إيقافه تعود الصفحة إلى شكلها الأصلي تمامًا دون أي فواصل.' },
+      { type: 'select', key: 'style', label: 'نمط الفاصل', options: DIVIDER_STYLE, hint: 'أ: خط رفيع مع زخرفة مركزية. ب: خطوط قياس هندسية متناظرة. ج: توهّج زيتوني ناعم يمزج القسمين. النظام قابل للتوسعة بأنماط جديدة.' },
+      { type: 'range', key: 'opacity', label: 'شدة الظهور', min: 0, max: 100, step: 1, default: 100, suffix: '%',
+        hint: 'مستوى حضور الفاصل ككل. القيم المنخفضة أكثر هدوءًا.' },
+      { type: 'range', key: 'thickness', label: 'سماكة الخط', min: 1, max: 4, step: 1, default: 1, suffix: 'px',
+        hint: 'وزن الخط والعلامات. يبقى رفيعًا للطابع التنفيذي الراقي.' },
+      { type: 'range', key: 'accentIntensity', label: 'كثافة اللون الزيتوني', min: 0, max: 100, step: 1, default: 55, suffix: '%',
+        hint: 'درجة إشباع اللون الزيتوني (اللون الأساسي للهوية) في الخطوط والزخارف.' },
+      { type: 'checkbox', key: 'ornament', label: 'إظهار الزخرفة المركزية', hint: 'العنصر الزخرفي الصغير في منتصف الفاصل (المعيّن).' },
+      { type: 'range', key: 'density', label: 'كثافة العناصر', min: 1, max: 9, step: 1, default: 3,
+        hint: 'عدد العلامات / الشرطات / طبقات التوهّج حسب النمط. الأقل أهدأ.' },
+      { type: 'range', key: 'spacingTop', label: 'المسافة العلوية', min: 0, max: 200, step: 2, default: 56, suffix: 'px',
+        hint: 'المسافة أعلى الفاصل. تتكيّف تلقائيًا مع الجوّال.' },
+      { type: 'range', key: 'spacingBottom', label: 'المسافة السفلية', min: 0, max: 200, step: 2, default: 56, suffix: 'px',
+        hint: 'المسافة أسفل الفاصل. تتكيّف تلقائيًا مع الجوّال.' }
+    ] },
+
     { id: 'footer', group: 'content', label: 'التذييل', desc: 'أعمدة الروابط أسفل الموقع.', base: 'footer', fields: [
       { type: 'list', key: 'columns', label: 'الأعمدة', itemLabel: 'عمود', addLabel: 'إضافة عمود', titleKey: 'title', fields: [
         { type: 'text', key: 'title', label: 'عنوان العمود' },
@@ -321,5 +356,5 @@ window.CMS_SCHEMA = (function () {
     ] }
   ];
 
-  return { GROUPS: GROUPS, SECTIONS: SECTIONS, SERVICES_DEFAULT: SERVICES_DEFAULT };
+  return { GROUPS: GROUPS, SECTIONS: SECTIONS, SERVICES_DEFAULT: SERVICES_DEFAULT, DIVIDERS_DEFAULT: DIVIDERS_DEFAULT };
 })();

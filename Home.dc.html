@@ -72,6 +72,8 @@
 <script src="./config/consultation-cards.js"></script>
 <!-- Reusable content-card renderer (articles today; extensible to other card content). -->
 <script src="./config/content-cards.js"></script>
+<!-- Reusable premium Section Divider design system — refines the transitions between sections (CMS: content.sectionDividers). -->
+<script src="./config/section-dividers.js"></script>
 <script src="./support.js"></script>
 <!-- Shared Header + Footer — the single source of the site chrome. -->
 <script src="./config/site-chrome.js?v=20260727b"></script>
@@ -110,6 +112,29 @@
       #how-timeline.drawn #how-line { transform:scaleX(1); }
       .how-step { flex-direction:column; align-items:stretch; gap:24px; }
       .how-node { margin:0 auto; }
+    }
+    /* WHY — refined staggered entrance + calm hover micro-interactions, in the
+       SAME animation language as the consultations cards (olive, .7s,
+       cubic-bezier(0.22,0.61,0.36,1), ~80ms stagger). The hidden pre-reveal state
+       lives behind .why-anim, which JS adds ONLY once the IntersectionObserver is
+       wired — so if JS/observer is unavailable the points stay fully visible. */
+    .why-title { transition:color .35s ease; }
+    .why-dot { transition:transform .5s cubic-bezier(0.22,0.61,0.36,1), box-shadow .5s ease; }
+    .why-points.why-anim .why-point { opacity:0; transform:translateY(22px); transition:opacity .7s ease, transform .7s cubic-bezier(0.22,0.61,0.36,1); }
+    .why-points.why-anim.in .why-point { opacity:1; transform:none; }
+    .why-points.why-anim.in .why-point:nth-child(1) { transition-delay:.04s; }
+    .why-points.why-anim.in .why-point:nth-child(2) { transition-delay:.12s; }
+    .why-points.why-anim.in .why-point:nth-child(3) { transition-delay:.20s; }
+    .why-points.why-anim.in .why-point:nth-child(4) { transition-delay:.28s; }
+    .why-points.why-anim.in .why-point:nth-child(5) { transition-delay:.36s; }
+    .why-points.why-anim.in .why-point:nth-child(6) { transition-delay:.44s; }
+    @media (hover:hover) {
+      .why-point:hover .why-dot { transform:translateY(-3px) scale(1.6); box-shadow:0 0 0 5px rgba(72,85,63,0.07); }
+      .why-point:hover .why-title { color:#48553F; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .why-points.why-anim .why-point { opacity:1 !important; transform:none !important; transition:none !important; }
+      .why-point, .why-dot, .why-title { transition:none !important; }
     }
     @media (max-width: 899px) {
       /* Stacked hero: collapse the copy's desktop bottom padding so the text and
@@ -183,6 +208,9 @@
     </div>
   </section>
 
+  <!-- SECTION DIVIDER — hero → topics (reusable system: config/section-dividers.js) -->
+  {{ dividerAfterHero }}
+
   <!-- ORGANIZATIONS slot (CMS position: after-hero) -->
   {{ orgAfterHero }}
 
@@ -203,6 +231,9 @@
   <!-- ORGANIZATIONS slot (CMS position: after-topics) -->
   {{ orgAfterTopics }}
 
+  <!-- SECTION DIVIDER — topics → how -->
+  {{ dividerAfterTopics }}
+
   <!-- HOW IT WORKS -->
   <section id="how" style="max-width:1400px; margin:0 auto; padding:clamp(72px,9vw,130px) clamp(20px,6vw,64px); border-top:1px solid #E6E0D8;">
     <h2 data-reveal="up" style="font-size:clamp(28px,3.4vw,42px); font-weight:700; line-height:1.32; color:#232323; margin:0 0 clamp(56px,7vw,88px); text-wrap:pretty; opacity:0; transform:translateY(16px); transition:opacity 1s cubic-bezier(0.22,0.61,0.36,1), transform 1s cubic-bezier(0.22,0.61,0.36,1);">{{ how.title }}</h2>
@@ -222,6 +253,9 @@
     </div>
   </section>
 
+  <!-- SECTION DIVIDER — how → stats -->
+  {{ dividerAfterHow }}
+
   <!-- STATS -->
   <section id="stats" ref="{{ setStatsRef }}" style="max-width:1400px; margin:0 auto; padding:clamp(56px,6.5vw,84px) clamp(20px,6vw,64px); border-top:1px solid #E6E0D8;">
     <h2 data-reveal="up" style="text-align:center; font-size:clamp(26px,3.2vw,38px); font-weight:700; line-height:1.32; color:#232323; margin:0 0 clamp(44px,5.5vw,68px); text-wrap:pretty; opacity:0; transform:translateY(16px); transition:opacity 1s cubic-bezier(0.22,0.61,0.36,1), transform 1s cubic-bezier(0.22,0.61,0.36,1);">أرقام تعكس الخبرة</h2>
@@ -238,6 +272,9 @@
   <!-- ORGANIZATIONS slot (CMS position: after-stats) -->
   {{ orgAfterStats }}
 
+  <!-- SECTION DIVIDER — stats → why -->
+  {{ dividerAfterStats }}
+
   <!-- WHY -->
   <section id="why" data-reveal="up" style="max-width:1400px; margin:0 auto; padding:clamp(70px,9vw,120px) clamp(20px,6vw,64px); border-top:1px solid #E6E0D8; display:flex; gap:clamp(40px,6vw,90px); flex-wrap:wrap; align-items:stretch; opacity:0; transform:translateY(16px); transition:opacity 1s cubic-bezier(0.22,0.61,0.36,1), transform 1s cubic-bezier(0.22,0.61,0.36,1);">
     <div style="flex:1 1 400px; min-width:280px; max-width:505px; align-self:flex-end;">
@@ -245,12 +282,12 @@
     </div>
     <div style="flex:1 1 460px; min-width:280px;">
       <h2 style="font-size:clamp(26px,3.2vw,38px); font-weight:700; line-height:1.34; margin:0 0 48px; max-width:520px; text-wrap:pretty;">{{ why.statement }}</h2>
-      <div style="display:flex; flex-direction:column; gap:40px;">
+      <div class="why-points" ref="{{ setWhyPoints }}" style="display:flex; flex-direction:column; gap:40px;">
         <sc-for list="{{ why.points }}" as="point" hint-placeholder-count="3">
-          <div style="display:flex; gap:20px; align-items:baseline; padding-top:32px; border-top:1px solid #EDE8E1;">
-            <div style="flex:0 0 auto; width:6px; height:6px; border-radius:50%; background:#A57A4C; transform:translateY(-3px);"></div>
+          <div class="why-point" style="display:flex; gap:20px; align-items:baseline; padding-top:32px; border-top:1px solid #EDE8E1;">
+            <div class="why-dot" style="flex:0 0 auto; width:6px; height:6px; border-radius:50%; background:#A57A4C; transform:translateY(-3px);"></div>
             <div>
-              <div style="font-size:17px; font-weight:600; margin-bottom:12px;">{{ point.title }}</div>
+              <div class="why-title" style="font-size:17px; font-weight:600; margin-bottom:12px;">{{ point.title }}</div>
               <div style="font-size:14px; line-height:1.85; color:#7A746B;">{{ point.desc }}</div>
             </div>
           </div>
@@ -261,6 +298,9 @@
 
   <!-- ORGANIZATIONS slot (CMS position: after-why) -->
   {{ orgAfterWhy }}
+
+  <!-- SECTION DIVIDER — why → (consultations / articles / closing) -->
+  {{ dividerAfterWhy }}
 
   <!-- AVAILABLE CONSULTATIONS — dynamic from CMS services.consultations,
        rendered via the SAME shared card renderer as the Consulting page.
@@ -317,6 +357,7 @@ class Component extends DCLogic {
     this.applyPortrait();
     this.applyWhyPortrait();
     this.armReveal();
+    this.armWhyPoints();
     this.runStats();
   };
 
@@ -398,6 +439,28 @@ class Component extends DCLogic {
     if (src && el.getAttribute('src') !== src) el.setAttribute('src', src);
   };
 
+  // "Why choose me" feature entrance — the SAME scroll-triggered staggered
+  // reveal as the consultations cards (config/consultation-cards.js gridRef).
+  // The points are fully visible by default; the hiding .why-anim class is added
+  // only once the observer is wired, and a safety-net timer reveals in place if
+  // it never fires — so a missing IntersectionObserver never leaves them blank.
+  // Reduced-motion: skip the whole animation (CSS also enforces it).
+  setWhyPoints = (el) => { if (!el) return; this.whyPointsEl = el; this.armWhyPoints(); };
+  armWhyPoints = () => {
+    const node = this.whyPointsEl;
+    if (!node || node.__whyObserved) return;
+    node.__whyObserved = true;
+    if (!('IntersectionObserver' in window)) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    node.classList.add('why-anim');
+    const reveal = () => { node.classList.add('in'); };
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { reveal(); io.disconnect(); clearTimeout(fallback); }
+    }, { threshold: 0.12 });
+    io.observe(node);
+    const fallback = setTimeout(() => { reveal(); io.disconnect(); }, 1600);
+  };
+
   setStatsRef = (el) => {
     if (!el) return;
     this.statsEl = el;
@@ -436,7 +499,7 @@ class Component extends DCLogic {
   };
 
   renderVals() {
-    const base = { setRootRef: this.setRootRef, setPortrait: this.setPortrait, setWhyPortrait: this.setWhyPortrait, setStatsRef: this.setStatsRef };
+    const base = { setRootRef: this.setRootRef, setPortrait: this.setPortrait, setWhyPortrait: this.setWhyPortrait, setWhyPoints: this.setWhyPoints, setStatsRef: this.setStatsRef };
     const c = this.state.cfg;
     if (!c) return base;
     // Shared header + footer — the single source for the site chrome.
@@ -449,6 +512,11 @@ class Component extends DCLogic {
       ? window.SiteChrome.renderOrganizations(c) : null;
     const orgPos = (c.content && c.content.organizations && c.content.organizations.position) || 'before-closing';
     const orgAt = (key) => (orgEl && orgPos === key) ? orgEl : null;
+
+    // Section Dividers — the reusable premium transition system. One shared look
+    // (config/section-dividers.js), rendered once per boundary. Returns null when
+    // disabled from the CMS, so the page keeps its original layout untouched.
+    const divider = () => (window.SectionDividers ? window.SectionDividers.render(c) : null);
 
     // Latest Articles homepage section — reusable content-card renderer.
     const latestArticles = (window.ContentCards && window.ContentCards.renderLatestSection)
@@ -485,6 +553,11 @@ class Component extends DCLogic {
       orgAfterStats: orgAt('after-stats'),
       orgAfterWhy: orgAt('after-why'),
       orgBeforeClosing: orgAt('before-closing'),
+      dividerAfterHero: divider(),
+      dividerAfterTopics: divider(),
+      dividerAfterHow: divider(),
+      dividerAfterStats: divider(),
+      dividerAfterWhy: divider(),
       latestArticles,
       consultationsGrid,
       hasConsultations: !!consultationsGrid,
