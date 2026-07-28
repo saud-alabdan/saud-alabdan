@@ -89,6 +89,7 @@
   function blankValue(node) {
     switch (node.type) {
       case 'number': return '';
+      case 'range': return node.default != null ? node.default : (node.min != null ? node.min : 0);
       case 'checkbox': return false;
       case 'select': return node.options && node.options[0] ? node.options[0][0] : '';
       case 'group': return blankItem(node.fields);
@@ -106,7 +107,7 @@
 
   /* ── field renderers ──────────────────────────────────────────────────── */
   function coerce(node, raw) {
-    if (node.type === 'number') return raw === '' ? '' : Number(raw);
+    if (node.type === 'number' || node.type === 'range') return raw === '' ? '' : Number(raw);
     return raw;
   }
 
@@ -179,6 +180,13 @@
     } else if (node.type === 'color') {
       control = el('input', { id: id, type: 'color' });
       control.value = /^#[0-9a-fA-F]{6}$/.test(value) ? value : '#000000';
+    } else if (node.type === 'range') {
+      control = el('input', { id: id, type: 'range' });
+      if (node.min != null) control.min = String(node.min);
+      if (node.max != null) control.max = String(node.max);
+      if (node.step != null) control.step = String(node.step);
+      var rdef = node.default != null ? node.default : (node.min != null ? node.min : 0);
+      control.value = String(value == null || value === '' ? rdef : value);
     } else {
       control = el('input', { id: id, type: node.type === 'number' ? 'number' : (node.type === 'email' ? 'email' : (node.type === 'date' ? 'date' : 'text')) });
       control.value = value == null ? '' : String(value);
@@ -189,7 +197,11 @@
         document.createTextNode(node.label),
         node.required ? el('span', { class: 'req', text: '*' }) : null
       ]),
-      node.type === 'color' ? el('div', { class: 'color-row' }, [control, el('span', { class: 'hint', id: id + '-v', text: control.value })]) : control,
+      node.type === 'color'
+        ? el('div', { class: 'color-row' }, [control, el('span', { class: 'hint', id: id + '-v', text: control.value })])
+        : node.type === 'range'
+          ? el('div', { class: 'range-row' }, [control, el('span', { class: 'range-val', id: id + '-v', text: control.value + (node.suffix || '') })])
+          : control,
       node.hint ? el('p', { class: 'hint', text: node.hint }) : null,
       el('p', { class: 'error' })
     ]);
@@ -198,6 +210,7 @@
     control.addEventListener(evt, function () {
       setPath(ctx.getDoc(), fullPath, coerce(node, control.value));
       if (node.type === 'color') { var vlabel = field.querySelector('#' + CSS.escape(id + '-v')); if (vlabel) vlabel.textContent = control.value; }
+      if (node.type === 'range') { var rlabel = field.querySelector('#' + CSS.escape(id + '-v')); if (rlabel) rlabel.textContent = control.value + (node.suffix || ''); }
       validateField(field, node, control.value);
       ctx.onEdit();
     });

@@ -159,7 +159,8 @@
     hero: {
       titleLines: ['وضوح في القرار', 'قبل الحديث عن الحل'],
       body: 'أعمل مع أصحاب الأعمال لتحويل التحديات إلى خطوات عملية قابلة للتنفيذ، وفرص للنمو والتحسين.',
-      cta: { label: 'احجز استشارتك', href: '#contact' }
+      cta: { label: 'احجز استشارتك', href: '#contact' },
+      portraitScale: 100                          // Hero portrait size, percent (70–130). 100 = default.
     },
 
     // 2 — Consultation Topics

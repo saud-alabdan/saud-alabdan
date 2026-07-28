@@ -318,6 +318,15 @@ body {
 .color-row { display: flex; align-items: center; gap: 12px; }
 .color-row .hint { font-family: ui-monospace, monospace; }
 
+.range-row { display: flex; align-items: center; gap: 14px; }
+.range-row input[type="range"] { flex: 1 1 auto; accent-color: var(--primary); cursor: pointer; }
+.range-val {
+  flex: 0 0 auto; min-width: 3.5em; text-align: center;
+  font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ink);
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius-sm); padding: 4px 10px;
+}
+
 /* ── Media Manager ──────────────────────────────────────────────────────── */
 .media {
   display: flex; gap: 16px; align-items: flex-start;
