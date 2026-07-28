@@ -17,6 +17,8 @@ window.CMS_SCHEMA = (function () {
   var CURRENCY = [['SAR', 'ريال (SAR)'], ['USD', 'دولار (USD)']];
   var PRICE_TYPE = [['fixed', 'سعر ثابت'], ['from', 'يبدأ من'], ['contact', 'تواصل لمعرفة السعر'], ['custom', 'نص مخصص']];
   var PERIOD = [['session', 'لكل جلسة'], ['month', 'شهري'], ['once', 'مرة واحدة']];
+  var BADGE_TYPE = [['none', 'بدون'], ['popular', 'الأكثر طلبًا'], ['new', 'جديد'], ['limited', 'عرض محدود'], ['bestValue', 'أفضل قيمة'], ['custom', 'مخصص']];
+  var STATUS = [['available', 'متاحة'], ['fullyBooked', 'مكتملة الحجز'], ['comingSoon', 'قريبًا'], ['hidden', 'مخفية']];
   var ICONS = [['calendar', 'تقويم'], ['messages', 'محادثة'], ['clipboard', 'قائمة'], ['handshake', 'مصافحة']];
   var SOCIAL_TYPES = [['linkedin', 'LinkedIn'], ['x', 'X'], ['instagram', 'Instagram'], ['email', 'البريد']];
   // Closing CTA option sets — appearance values map to the site's design tokens
@@ -241,18 +243,25 @@ window.CMS_SCHEMA = (function () {
       { type: 'list', key: 'consultations', label: 'الاستشارات', itemLabel: 'استشارة', addLabel: 'إضافة استشارة', titleKey: 'title', fields: [
         { type: 'text', key: 'title', label: 'العنوان', required: true },
         { type: 'textarea', key: 'description', label: 'وصف مختصر' },
+        { type: 'select', key: 'status', label: 'حالة الاستشارة', options: STATUS, hint: 'متاحة: تظهر مع زر الحجز. مكتملة الحجز / قريبًا: تظهر بشارة وزر معطّل. مخفية: لا تظهر في الموقع.' },
         { type: 'select', key: 'priceType', label: 'طريقة عرض السعر', options: PRICE_TYPE, hint: 'ثابت / يبدأ من: يستخدمان السعر والعملة. تواصل: يعرض «تواصل لمعرفة السعر». نص مخصص: يعرض «نص السعر المخصص».' },
-        { type: 'number', key: 'price', label: 'السعر', hint: 'يُستخدم مع «سعر ثابت» و«يبدأ من».' },
+        { type: 'number', key: 'price', label: 'السعر الحالي', hint: 'يُستخدم مع «سعر ثابت» و«يبدأ من».' },
+        { type: 'number', key: 'compareAtPrice', label: 'السعر السابق (اختياري)', hint: 'يظهر مشطوبًا بجانب السعر الحالي عندما يكون أكبر منه. اتركه فارغًا لإخفائه.' },
         { type: 'select', key: 'currency', label: 'العملة', options: CURRENCY },
         { type: 'text', key: 'priceText', label: 'نص السعر المخصص', hint: 'يُستخدم مع «نص مخصص» فقط، مثل: حسب حجم المشروع.' },
         { type: 'select', key: 'period', label: 'دورة السعر', options: PERIOD, hint: 'لاحقة تظهر بعد السعر مع «سعر ثابت» و«يبدأ من» (مثل «/ شهريًا»). «مرة واحدة» بدون لاحقة.' },
+        { type: 'checkbox', key: 'hidePrice', label: 'إخفاء السعر وعرض «تواصل لمعرفة السعر»' },
+        { type: 'checkbox', key: 'taxNote', label: 'إظهار ملاحظة «شامل ضريبة القيمة المضافة»' },
         { type: 'number', key: 'durationMinutes', label: 'مدة الجلسة (دقائق)', hint: 'اتركه فارغًا أو صفرًا لإخفاء المدة.' },
         { type: 'list', key: 'features', label: 'المزايا', itemLabel: 'ميزة', addLabel: 'إضافة ميزة', strings: true },
-        { type: 'text', key: 'badge', label: 'الشارة', hint: 'شارة نصية اختيارية، مثل: الأكثر طلبًا، موصى به، للمبتدئين. اتركها فارغة لإخفائها.' },
+        { type: 'select', key: 'badgeType', label: 'نوع الشارة', options: BADGE_TYPE, hint: 'شارة تظهر أعلى البطاقة. اختر «مخصص» لكتابة نص الشارة يدويًا. «الأكثر طلبًا» و«أفضل قيمة» يُبرزان البطاقة.' },
+        { type: 'text', key: 'badge', label: 'نص الشارة المخصصة', hint: 'يُستخدم فقط عندما يكون نوع الشارة «مخصص».' },
+        { type: 'text', key: 'discountText', label: 'نص شارة الخصم (اختياري)', hint: 'مثال: خصم ٢٠٪. يظهر بجانب السعر. يختفي تلقائيًا بعد انتهاء العرض.' },
+        { type: 'date', key: 'offerExpiry', label: 'تاريخ انتهاء العرض (اختياري)', hint: 'يظهر عدّاد «ينتهي العرض خلال…». بعد انتهائه يُخفى السعر السابق وشارة الخصم تلقائيًا.' },
         { type: 'text', key: 'ctaLabel', label: 'نص زر الإجراء', hint: 'مثال: احجز الآن' },
-        { type: 'text', key: 'ctaHref', label: 'وجهة الزر', hint: 'رابط أو صفحة، مثل: Contact.dc.html' },
+        { type: 'text', key: 'ctaHref', label: 'رابط زر الإجراء', hint: 'رابط أو صفحة، مثل: Contact.dc.html. سيُستخدم لاحقًا كوجهة الدفع الإلكتروني عند تفعيله.' },
         { type: 'number', key: 'order', label: 'ترتيب العرض', hint: 'الأصغر يظهر أولًا.' },
-        { type: 'checkbox', key: 'active', label: 'مُفعّلة (تظهر في الموقع)' }
+        { type: 'checkbox', key: 'active', label: 'مُفعّلة (تظهر في الموقع)', hint: 'للتوافق مع الإصدارات السابقة — تُستخدم «حالة الاستشارة» أعلاه للتحكم الكامل.' }
       ] }
     ] },
 

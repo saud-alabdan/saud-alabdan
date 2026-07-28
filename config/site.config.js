@@ -160,7 +160,7 @@
       titleLines: ['وضوح في القرار', 'قبل الحديث عن الحل'],
       body: 'أعمل مع أصحاب الأعمال لتحويل التحديات إلى خطوات عملية قابلة للتنفيذ، وفرص للنمو والتحسين.',
       cta: { label: 'احجز استشارتك', href: '#contact' },
-      portraitScale: 100                          // Hero portrait size, percent (70–130). 100 = default.
+      portraitScale: 100                          // Hero portrait size, percent (70–200). 100 = default.
     },
 
     // 2 — Consultation Topics
@@ -264,29 +264,35 @@
       {
         title: 'استشارة استراتيجية',
         description: 'جلسة لمراجعة وضعك الحالي وتحديد أولوياتك القادمة بوضوح.',
-        priceType: 'fixed', price: 1500, currency: 'SAR', priceText: '', period: 'session',
+        priceType: 'fixed', price: 1500, compareAtPrice: '', currency: 'SAR', priceText: '', period: 'session',
+        hidePrice: false, taxNote: true,
         durationMinutes: 60,
         features: ['تشخيص شامل للوضع الحالي', 'تحديد الأولويات والفرص', 'خطة عمل أولية قابلة للتنفيذ'],
-        badge: '', ctaLabel: 'احجز الآن', ctaHref: '',
-        order: 1, active: true
+        badgeType: 'bestValue', badge: '', discountText: '', offerExpiry: '',
+        ctaLabel: 'احجز الآن', ctaHref: '',
+        order: 1, status: 'available', active: true
       },
       {
         title: 'جلسة قرار مركّزة',
         description: 'جلسة سريعة لاتخاذ قرار محدد بثقة ووضوح.',
-        priceType: 'fixed', price: 800, currency: 'SAR', priceText: '', period: 'session',
+        priceType: 'fixed', price: 800, compareAtPrice: 1000, currency: 'SAR', priceText: '', period: 'session',
+        hidePrice: false, taxNote: true,
         durationMinutes: 30,
         features: ['تحليل الخيارات المتاحة', 'توصية واضحة ومباشرة'],
-        badge: 'الأكثر طلبًا', ctaLabel: 'احجز الآن', ctaHref: '',
-        order: 2, active: true
+        badgeType: 'popular', badge: '', discountText: 'خصم ٢٠٪', offerExpiry: '',
+        ctaLabel: 'احجز الآن', ctaHref: '',
+        order: 2, status: 'available', active: true
       },
       {
         title: 'برنامج مرافقة شهري',
         description: 'مرافقة مستمرة على مدار الشهر لتنفيذ الخطة خطوة بخطوة.',
-        priceType: 'from', price: 5000, currency: 'SAR', priceText: '', period: 'month',
+        priceType: 'from', price: 5000, compareAtPrice: '', currency: 'SAR', priceText: '', period: 'month',
+        hidePrice: false, taxNote: false,
         durationMinutes: 0,
         features: ['جلسات أسبوعية منتظمة', 'دعم مستمر عبر الرسائل', 'مراجعة شهرية للنتائج'],
-        badge: '', ctaLabel: 'تواصل معنا', ctaHref: 'Contact.dc.html',
-        order: 3, active: true
+        badgeType: 'none', badge: '', discountText: '', offerExpiry: '',
+        ctaLabel: 'تواصل معنا', ctaHref: 'Contact.dc.html',
+        order: 3, status: 'available', active: true
       }
     ],
     products: [
