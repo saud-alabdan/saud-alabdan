@@ -116,7 +116,21 @@
          the portrait read as one calm block on mobile. The portrait is a
          self-contained cut-out with its own soft light — no panel to hide. */
       #hero-copy { padding-bottom: 0 !important; }
-      #hero-figure { justify-self: center !important; }
+      /* Reserve real layout space for the portrait at any scale. On desktop the
+         portrait is sized with transform:scale(), which paints but occupies NO
+         layout space — harmless in the two-column grid where the figure sits
+         beside the copy. Stacked on mobile, that phantom (bottom-anchored) growth
+         overflowed UPWARD into the CTA above it, so every scale > 100% overlapped.
+         Here we instead drive the figure's real width from --portrait-scale: the
+         box (and its auto height) grows for real, so the single-column grid
+         naturally reserves the vertical space and the CTA is always clear. Same
+         visual size as the transform — nothing shrinks, no fixed margins. */
+      #hero-figure {
+        justify-self: center !important;
+        transform: none !important;
+        width: calc(min(82%, 392px) * var(--portrait-scale, 1)) !important;
+        max-width: none !important;
+      }
     }
     /* Phones: the section vertical rhythm (72–80px) leaves oversized gaps on a
        narrow screen. Tighten it moderately — horizontal padding and the desktop
