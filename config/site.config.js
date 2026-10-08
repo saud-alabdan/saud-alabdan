@@ -190,7 +190,7 @@
         { num: '01', title: 'التواصل', desc: 'تحديد موعد مناسب لبدء الاستشارة.', icon: 'calendar', featured: false },
         { num: '02', title: 'المناقشة', desc: 'فهم التحدي والهدف ومناقشة تفاصيل الحالة.', icon: 'messages', featured: false },
         { num: '03', title: 'التوصيات', desc: 'الحصول على توصيات عملية وخطوات واضحة للتنفيذ.', icon: 'clipboard', featured: false },
-        { num: '04', title: 'الدفع عند الاستفادة', desc: 'تدفع بعد الجلسة، إذا وجدت فيها قيمة حقيقية.', icon: 'handshake', featured: true }
+        { num: '04', title: 'المتابعة', desc: 'نتابع معك أثر التوصيات، ونعدّلها حتى تناسب عملك.', icon: 'handshake', featured: true }
       ]
     },
 
@@ -198,7 +198,7 @@
     stats: {
       title: 'أرقام تعكس الخبرة',
       items: [
-        { value: 15, suffix: '+', label: 'سنة خبرة' },
+        { value: new Date().getFullYear() - 2003, suffix: '', label: 'سنة خبرة تدريبية وإدارية' },   // يُحسب تلقائيًا من سنة البداية 2003
         { value: 200, suffix: '+', label: 'جهة تعاملت معها' },
         { value: 500, suffix: '+', label: 'جلسة استشارية' },
         { value: 30, suffix: '+', label: 'قطاعًا مختلفًا' }
@@ -287,7 +287,7 @@
         priceType: 'fixed', price: 650, compareAtPrice: '', currency: 'SAR', priceText: '', period: 'session',
         hidePrice: false, taxNote: false,
         durationMinutes: 60,
-        features: ['تشخيص الإجراءات ومواضع الهدر', 'اختيار أدوات الذكاء الاصطناعي المناسبة لعملك', 'ملخص مكتوب بالخطوات يصلك خلال 48 ساعة', 'تدفع بعد الجلسة إذا وجدت فيها فائدة'],
+        features: ['تشخيص الإجراءات ومواضع الهدر', 'اختيار أدوات الذكاء الاصطناعي المناسبة لعملك', 'ملخص مكتوب بالخطوات يصلك خلال 48 ساعة', 'نلتزم لك بتوصيات عملية تناسب واقع عملك'],
         badgeType: 'none', badge: '', discountText: '', offerExpiry: '',
         ctaLabel: 'احجز الآن', ctaHref: waTo('السلام عليكم، أود حجز استشارة تطوير وتقنية.'),
         order: 1, status: 'available', active: true
@@ -298,7 +298,7 @@
         priceType: 'fixed', price: 850, compareAtPrice: '', currency: 'SAR', priceText: '', period: 'once',
         hidePrice: false, taxNote: false,
         durationMinutes: 0,
-        features: ['تجربة المستخدم ورحلة العميل', 'المحتوى والهوية والتصميم', 'تقرير مكتوب خلال 5 أيام عمل', 'حتى 10 صفحات أو شاشات', 'تدفع بعد التقرير إذا وجدت فيه فائدة'],
+        features: ['تجربة المستخدم ورحلة العميل', 'المحتوى والهوية والتصميم', 'تقرير مكتوب خلال 5 أيام عمل', 'حتى 10 صفحات أو شاشات', 'نصف المبلغ عند البدء، والنصف عند التسليم'],
         badgeType: 'none', badge: '', discountText: '', offerExpiry: '',
         ctaLabel: 'اطلب المراجعة', ctaHref: waTo('السلام عليكم، أود طلب مراجعة منصة أو موقع.'),
         order: 2, status: 'available', active: true
