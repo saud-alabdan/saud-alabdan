@@ -58,8 +58,8 @@
   /* ── SITE / BRAND IDENTITY ─────────────────────────────────────────────*/
   const SITE = {
     name: 'سعود العبدان',
-    tagline: 'استشارات استراتيجية لصناع القرار.',
-    heroKicker: 'استشارات استراتيجية لصناع القرار',
+    tagline: 'التطوير والتحسين المستمر، وتوظيف الذكاء الاصطناعي في الأعمال.',
+    heroKicker: 'التطوير والتحسين المستمر',
     portrait: 'uploads/صورتي.png',
     email: 'contact@saudalabdan.com',
     phone: '',                                    // future-ready; hidden while empty
@@ -74,12 +74,12 @@
    * overrides keyed by page id; falls back to `default`.                   */
   const SEO = {
     default: {
-      title: 'سعود العبدان — استشارات استراتيجية لصناع القرار',
-      description: 'أعمل مع أصحاب الأعمال لتحويل التحديات إلى خطوات عملية قابلة للتنفيذ، وفرص للنمو والتحسين.',
+      title: 'سعود العبدان | التطوير والتحسين المستمر والذكاء الاصطناعي في الأعمال',
+      description: 'أساعد المنشآت والجهات على تطوير أعمالها وتحسين عملياتها وتوظيف الذكاء الاصطناعي فيها، من واقع الممارسة.',
       ogImage: 'uploads/صورتي.png'
     },
     pages: {
-      home:       { title: 'سعود العبدان — استشارات استراتيجية لصناع القرار' },
+      home:       { title: 'سعود العبدان | التطوير والتحسين المستمر والذكاء الاصطناعي في الأعمال' },
       contact:    { title: 'تواصل — سعود العبدان' }
     }
   };
@@ -111,7 +111,8 @@
     primary: [
       { label: 'الموضوعات', href: '#topics' },
       { label: 'كيف أعمل', href: '#how' },
-      { label: 'لماذا أنا', href: '#why' }
+      { label: 'لماذا أنا', href: '#why' },
+      { label: 'المقالات', href: 'Articles.dc.html' }
     ],
     // Destination is the single consultation action (whatsapp), so the CTA
     // carries a label only — no per-CTA link to drift out of sync.
@@ -124,6 +125,7 @@
       {
         title: 'التنقل',
         links: [
+          { label: 'المقالات', href: 'Articles.dc.html' },
           { label: 'المنتجات', href: 'Products.dc.html' },
           { label: 'الدورات', href: 'Courses.dc.html' },
           { label: 'تواصل', href: 'Contact.dc.html' }
@@ -145,7 +147,7 @@
    * single source — so the address lives in exactly one place.              */
   const SOCIAL = [
     { type: 'linkedin',  label: 'LinkedIn',  href: 'https://www.linkedin.com' },
-    { type: 'x',         label: 'X',         href: 'https://x.com' },
+    { type: 'x',         label: 'X',         href: 'https://x.com/Saudalabdan' },
     { type: 'instagram', label: 'Instagram', href: '', hidden: true },
     { type: 'email',     label: 'البريد' }
   ];
@@ -157,26 +159,26 @@
 
     // 1 — Hero
     hero: {
-      titleLines: ['وضوح في القرار', 'قبل الحديث عن الحل'],
-      body: 'أعمل مع أصحاب الأعمال لتحويل التحديات إلى خطوات عملية قابلة للتنفيذ، وفرص للنمو والتحسين.',
+      titleLines: ['أعمال أقل هدرًا', 'ونتائج أوضح'],
+      body: 'أساعد المنشآت والجهات على تطوير أعمالها وتحسين عملياتها وتوظيف الذكاء الاصطناعي فيها، من واقع الممارسة.',
       cta: { label: 'احجز استشارتك', href: '#contact' },
       portraitScale: 100                          // Hero portrait size, percent (70–200). 100 = default.
     },
 
     // 2 — Consultation Topics
     topics: {
-      title: 'ما القرار الذي تعمل عليه اليوم؟',
-      body: 'أمثلة على بعض الموضوعات التي أعمل عليها. وإذا لم تجد حالتك هنا، فسنناقشها معًا.',
+      title: 'ما الذي تريد تطويره اليوم؟',
+      body: 'أمثلة على ما أعمل عليه مع المنشآت والجهات. وإن لم تجد حالتك هنا، نناقشها معًا.',
       cta: { label: 'احجز استشارتك', href: 'Contact.dc.html' },
       items: [
-        { title: 'افتتاح مشروع جديد', desc: 'دراسة الجدوى والخطوات الأولى قبل الانطلاق.' },
-        { title: 'التوسع وافتتاح الفروع', desc: 'توقيت التوسع واختيار المواقع بقرار مدروس.' },
-        { title: 'تحسين التشغيل', desc: 'معالجة الاختناقات ورفع كفاءة العمليات اليومية.' },
-        { title: 'رفع الربحية', desc: 'مراجعة التكاليف والتسعير وهوامش الربح.' },
-        { title: 'إعادة هيكلة الأعمال', desc: 'إعادة ترتيب الأدوار والهيكل لدعم المرحلة القادمة.' },
-        { title: 'تقييم فكرة أو فرصة استثمارية', desc: 'فحص الفرصة ومخاطرها قبل الالتزام بها.' },
-        { title: 'تطوير تجربة العميل', desc: 'تحسين رحلة العميل ونقاط التواصل معه.' },
-        { title: 'بناء خطة للنمو', desc: 'مسار واضح المعالم لتنمية العمل بثبات.' }
+        { title: 'بناء خطة للنمو', desc: 'مسار واضح لتنمية عملك بثبات.' },
+        { title: 'تقييم فكرة أو فرصة', desc: 'فحص الجدوى والمخاطر قبل الالتزام.' },
+        { title: 'تحسين الإجراءات', desc: 'تشخيص مسار العمل قبل أتمتته أو تغيير نظامه.' },
+        { title: 'رفع كفاءة التشغيل', desc: 'معالجة الاختناقات وإزالة الهدر في العمل اليومي.' },
+        { title: 'توظيف الذكاء الاصطناعي', desc: 'اختيار الاستخدامات التي تضيف قيمة حقيقية لعملك.' },
+        { title: 'الجاهزية للتحول الرقمي', desc: 'مواءمة الإجراءات والبيانات قبل الأتمتة.' },
+        { title: 'مراجعة المنصات الإلكترونية', desc: 'دراسة المنصة وتجربتها وتشغيلها، وتوصيات للتطوير.' },
+        { title: 'الهوية والمحتوى المؤسسي', desc: 'مراجعة الهوية المؤسسية، ومحتوى القيادات، والحقائب التدريبية.' }
       ]
     },
 
@@ -206,19 +208,19 @@
     why: {
       portrait: 'uploads/صورتي.png',
       statement: 'لماذا يختارني العملاء؟',
-      body: 'أجمع بين النظرة التحليلية والخبرة الميدانية، لأساعدك على رؤية الصورة كاملة قبل اتخاذ القرار، بعيدًا عن الحلول العامة.',
+      body: 'أجمع بين الممارسة الميدانية والمنهج والتقنية، لأساعدك على رؤية عملك كاملًا قبل أن تقرر.',
       points: [
-        { title: 'تحليل قبل التوصية', desc: 'كل رأي مبني على فهم دقيق لواقع عملك، لا على قوالب جاهزة.' },
-        { title: 'حضور مباشر', desc: 'تعمل معي شخصيًا من أول جلسة حتى وضوح الخطوة التالية.' },
-        { title: 'قرار قابل للتنفيذ', desc: 'مخرجات عملية تستطيع البدء بها فورًا، لا مجرد نظريات.' }
+        { title: 'من الميدان إلى المنهج', desc: 'درّبت على كايزن داخل المملكة وخارجها، وطبّقته سنوات في نشاط تجاري.' },
+        { title: 'الإجراء والتقنية معًا', desc: 'خبرتي في البنية المؤسسية تجعلني أرى الإجراء والنظام والبيانات صورة واحدة.' },
+        { title: 'ذكاء اصطناعي بانضباط', desc: 'أوظّفه في عملي كل يوم، وأقيس أثره قبل أن أوصي به.' }
       ]
     },
 
     // 6 — Final CTA (shared, fully CMS-managed component — see config/site-chrome.js)
     closingCta: {
       enabled: true,                       // show / hide the whole section
-      title: 'هل لديك قرار يحتاج إلى وضوح؟',
-      body: 'احجز جلسة استشارية أولى وابدأ بخطوة واضحة نحو الحل.',
+      title: 'ما الخطوة التالية في عملك؟',
+      body: 'احجز جلسة تشخيص، ونحدد معًا أول خطوة للتطوير.',
       button: {
         label: 'احجز استشارتك الآن',
         destinationType: 'whatsapp',       // whatsapp | email | internal | external
@@ -279,37 +281,48 @@
   const SERVICES = {
     consultations: [
       {
-        title: 'استشارة استراتيجية',
-        description: 'جلسة لمراجعة وضعك الحالي وتحديد أولوياتك القادمة بوضوح.',
+        title: 'جلسة تشخيص وتطوير',
+        description: 'مراجعة وضع عملك وعملياته، وتحديد فرص التطوير ومواضع الهدر.',
         priceType: 'fixed', price: 1500, compareAtPrice: '', currency: 'SAR', priceText: '', period: 'session',
         hidePrice: false, taxNote: true,
         durationMinutes: 60,
-        features: ['تشخيص شامل للوضع الحالي', 'تحديد الأولويات والفرص', 'خطة عمل أولية قابلة للتنفيذ'],
+        features: ['تشخيص العمل والعمليات', 'تحديد الأولويات وفرص التحسين', 'خطة أولية قابلة للتنفيذ'],
         badgeType: 'bestValue', badge: '', discountText: '', offerExpiry: '',
         ctaLabel: 'احجز الآن', ctaHref: '',
         order: 1, status: 'available', active: true
       },
       {
-        title: 'جلسة قرار مركّزة',
-        description: 'جلسة سريعة لاتخاذ قرار محدد بثقة ووضوح.',
+        title: 'جلسة مركّزة',
+        description: 'تحدٍّ واحد محدد، وتوصية واضحة بشأنه.',
         priceType: 'fixed', price: 800, compareAtPrice: 1000, currency: 'SAR', priceText: '', period: 'session',
         hidePrice: false, taxNote: true,
         durationMinutes: 30,
-        features: ['تحليل الخيارات المتاحة', 'توصية واضحة ومباشرة'],
+        features: ['إجراء متعثر، أو أداة ذكاء اصطناعي تفكر في اعتمادها', 'توصية واضحة ومباشرة'],
         badgeType: 'popular', badge: '', discountText: 'خصم ٢٠٪', offerExpiry: '',
         ctaLabel: 'احجز الآن', ctaHref: '',
         order: 2, status: 'available', active: true
       },
       {
-        title: 'برنامج مرافقة شهري',
-        description: 'مرافقة مستمرة على مدار الشهر لتنفيذ الخطة خطوة بخطوة.',
+        title: 'برنامج التطوير الشهري',
+        description: 'مرافقة شهرية لتنفيذ خطة التطوير وقياس أثرها.',
         priceType: 'from', price: 5000, compareAtPrice: '', currency: 'SAR', priceText: '', period: 'month',
         hidePrice: false, taxNote: false,
         durationMinutes: 0,
-        features: ['جلسات أسبوعية منتظمة', 'دعم مستمر عبر الرسائل', 'مراجعة شهرية للنتائج'],
+        features: ['جلسات أسبوعية مع فريقك', 'متابعة مستمرة عبر الرسائل', 'قياس النتائج شهريًا'],
         badgeType: 'none', badge: '', discountText: '', offerExpiry: '',
         ctaLabel: 'تواصل معنا', ctaHref: 'Contact.dc.html',
         order: 3, status: 'available', active: true
+      },
+      {
+        title: 'المراجعة والتقييم',
+        description: 'رأي متخصص ومكتوب في أصل من أصول منشأتك، مع توصيات قابلة للتنفيذ.',
+        priceType: 'custom', price: '', compareAtPrice: '', currency: 'SAR', priceText: 'حسب النطاق', period: 'once',
+        hidePrice: false, taxNote: false,
+        durationMinutes: 0,
+        features: ['المنصات الإلكترونية', 'الهوية المؤسسية', 'مقالات القيادات ومحتواها', 'الحقائب التدريبية'],
+        badgeType: 'new', badge: '', discountText: '', offerExpiry: '',
+        ctaLabel: 'تواصل معنا', ctaHref: 'Contact.dc.html',
+        order: 4, status: 'available', active: true
       }
     ],
     products: [

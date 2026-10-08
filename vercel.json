@@ -2,6 +2,13 @@
   "cleanUrls": false,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/", "destination": "/Home.dc.html" }
+    {
+      "source": "/sb/:path*",
+      "destination": "https://jaubmntjmpaxtmzfvaet.supabase.co/:path*"
+    },
+    {
+      "source": "/",
+      "destination": "/Home.dc.html"
+    }
   ]
 }
