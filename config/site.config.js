@@ -147,7 +147,7 @@
    * visible). The email channel derives its address from SITE.email — the
    * single source — so the address lives in exactly one place.              */
   const SOCIAL = [
-    { type: 'linkedin',  label: 'LinkedIn',  href: 'https://www.linkedin.com' },
+    { type: 'linkedin',  label: 'LinkedIn',  href: 'https://www.linkedin.com/in/saudalabdan' },
     { type: 'x',         label: 'X',         href: 'https://x.com/Saudalabdan' },
     { type: 'instagram', label: 'Instagram', href: '', hidden: true },
     { type: 'email',     label: 'البريد' }
