@@ -13,16 +13,9 @@
  * Until these are filled in with real values, the site and CMS keep working on
  * the bundled config/site.config.js defaults (Supabase calls simply fall back).
  */
+// Supabase is retired: config/site.config.js is the single content source.
+// Empty values keep every Supabase call in "not configured" mode (no-op).
 window.SUPABASE_CONFIG = {
-  // On the live domain, Supabase is reached through the site's own origin
-  // (/sb → Vercel rewrite in vercel.json), so visitors whose network blocks
-  // *.supabase.co still load CMS content. Elsewhere (local preview) it goes direct.
-  url: (function () {
-    var direct = 'https://jaubmntjmpaxtmzfvaet.supabase.co';
-    try {
-      if (/(^|\.)saudalabdan\.com$/.test(location.hostname)) return location.origin + '/sb';
-    } catch (e) {}
-    return direct;
-  })(),
-  anonKey: 'sb_publishable_H9G9Lw5KNKuMuWaQrj-2Iw_XMO3U2Ih'
+  url: '',
+  anonKey: ''
 };

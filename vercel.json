@@ -3,10 +3,6 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/sb/:path*",
-      "destination": "https://jaubmntjmpaxtmzfvaet.supabase.co/:path*"
-    },
-    {
       "source": "/",
       "destination": "/Home.dc.html"
     }
