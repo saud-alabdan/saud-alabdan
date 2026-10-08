@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 
 # Saud AlAbdan Consulting Website
 
