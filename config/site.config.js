@@ -88,7 +88,7 @@
    * `enabled` gates any WhatsApp UI. `link` is derived from the number and a
    * pre-filled message; components should read `link` and never rebuild it. */
   const WHATSAPP = (function () {
-    const number = '966500000000';               // international format, no +
+    const number = '966542220291';               // international format, no +
     const message = 'السلام عليكم، أود حجز استشارة.';
     return {
       enabled: true,
@@ -105,6 +105,9 @@
       }
     };
   })();
+
+  // Pre-filled WhatsApp link for a specific service, so each message names it.
+  const waTo = (m) => 'https://wa.me/' + WHATSAPP.number + '?text=' + encodeURIComponent(m);
 
   /* ── NAVIGATION ────────────────────────────────────────────────────────*/
   const NAVIGATION = {
@@ -126,8 +129,6 @@
         title: 'التنقل',
         links: [
           { label: 'المقالات', href: 'Articles.dc.html' },
-          { label: 'المنتجات', href: 'Products.dc.html' },
-          { label: 'الدورات', href: 'Courses.dc.html' },
           { label: 'تواصل', href: 'Contact.dc.html' }
         ]
       },
@@ -189,7 +190,7 @@
         { num: '01', title: 'التواصل', desc: 'تحديد موعد مناسب لبدء الاستشارة.', icon: 'calendar', featured: false },
         { num: '02', title: 'المناقشة', desc: 'فهم التحدي والهدف ومناقشة تفاصيل الحالة.', icon: 'messages', featured: false },
         { num: '03', title: 'التوصيات', desc: 'الحصول على توصيات عملية وخطوات واضحة للتنفيذ.', icon: 'clipboard', featured: false },
-        { num: '04', title: 'الدفع عند الاستفادة', desc: 'يتم الدفع فقط إذا قدمت الاستشارة قيمة حقيقية.', icon: 'handshake', featured: true }
+        { num: '04', title: 'الدفع عند الاستفادة', desc: 'تدفع بعد الجلسة، إذا وجدت فيها قيمة حقيقية.', icon: 'handshake', featured: true }
       ]
     },
 
@@ -220,7 +221,7 @@
     closingCta: {
       enabled: true,                       // show / hide the whole section
       title: 'ما الخطوة التالية في عملك؟',
-      body: 'احجز جلسة تشخيص، ونحدد معًا أول خطوة للتطوير.',
+      body: 'احجز استشارتك، ونحدد معًا أول خطوة للتطوير.',
       button: {
         label: 'احجز استشارتك الآن',
         destinationType: 'whatsapp',       // whatsapp | email | internal | external
@@ -281,48 +282,37 @@
   const SERVICES = {
     consultations: [
       {
-        title: 'جلسة تشخيص وتطوير',
-        description: 'مراجعة وضع عملك وعملياته، وتحديد فرص التطوير ومواضع الهدر.',
-        priceType: 'fixed', price: 1500, compareAtPrice: '', currency: 'SAR', priceText: '', period: 'session',
-        hidePrice: false, taxNote: true,
+        title: 'استشارة تطوير وتقنية',
+        description: 'جلسة نشخّص فيها عملك معًا: أين الهدر، وما الذي يستحق التطوير، وأين يضيف الذكاء الاصطناعي قيمة.',
+        priceType: 'fixed', price: 650, compareAtPrice: '', currency: 'SAR', priceText: '', period: 'session',
+        hidePrice: false, taxNote: false,
         durationMinutes: 60,
-        features: ['تشخيص العمل والعمليات', 'تحديد الأولويات وفرص التحسين', 'خطة أولية قابلة للتنفيذ'],
-        badgeType: 'bestValue', badge: '', discountText: '', offerExpiry: '',
-        ctaLabel: 'احجز الآن', ctaHref: '',
+        features: ['تشخيص الإجراءات ومواضع الهدر', 'اختيار أدوات الذكاء الاصطناعي المناسبة لعملك', 'ملخص مكتوب بالخطوات يصلك خلال 48 ساعة', 'تدفع بعد الجلسة إذا وجدت فيها فائدة'],
+        badgeType: 'none', badge: '', discountText: '', offerExpiry: '',
+        ctaLabel: 'احجز الآن', ctaHref: waTo('السلام عليكم، أود حجز استشارة تطوير وتقنية.'),
         order: 1, status: 'available', active: true
       },
       {
-        title: 'جلسة مركّزة',
-        description: 'تحدٍّ واحد محدد، وتوصية واضحة بشأنه.',
-        priceType: 'fixed', price: 800, compareAtPrice: 1000, currency: 'SAR', priceText: '', period: 'session',
-        hidePrice: false, taxNote: true,
-        durationMinutes: 30,
-        features: ['إجراء متعثر، أو أداة ذكاء اصطناعي تفكر في اعتمادها', 'توصية واضحة ومباشرة'],
-        badgeType: 'popular', badge: '', discountText: 'خصم ٢٠٪', offerExpiry: '',
-        ctaLabel: 'احجز الآن', ctaHref: '',
+        title: 'مراجعة منصة أو موقع',
+        description: 'قراءة متخصصة لمنصتك أو موقعك من زاوية المستخدم والتشغيل، مع توصيات مرتبة بالأولوية.',
+        priceType: 'fixed', price: 850, compareAtPrice: '', currency: 'SAR', priceText: '', period: 'once',
+        hidePrice: false, taxNote: false,
+        durationMinutes: 0,
+        features: ['تجربة المستخدم ورحلة العميل', 'المحتوى والهوية والتصميم', 'تقرير مكتوب خلال 5 أيام عمل', 'حتى 10 صفحات أو شاشات', 'تدفع بعد التقرير إذا وجدت فيه فائدة'],
+        badgeType: 'none', badge: '', discountText: '', offerExpiry: '',
+        ctaLabel: 'اطلب المراجعة', ctaHref: waTo('السلام عليكم، أود طلب مراجعة منصة أو موقع.'),
         order: 2, status: 'available', active: true
       },
       {
-        title: 'برنامج التطوير الشهري',
-        description: 'مرافقة شهرية لتنفيذ خطة التطوير وقياس أثرها.',
-        priceType: 'from', price: 5000, compareAtPrice: '', currency: 'SAR', priceText: '', period: 'month',
+        title: 'للجهات والمشاريع الأكبر',
+        description: 'برنامج تطوير شهري، أو مراجعة شاملة، أو مراجعة الهوية المؤسسية والحقائب التدريبية ومحتوى القيادات.',
+        priceType: 'custom', price: '', compareAtPrice: '', currency: 'SAR', priceText: 'عرض سعر رسمي', period: 'once',
         hidePrice: false, taxNote: false,
         durationMinutes: 0,
-        features: ['جلسات أسبوعية مع فريقك', 'متابعة مستمرة عبر الرسائل', 'قياس النتائج شهريًا'],
+        features: ['نطاق وجدول زمني مكتوبان', 'عرض فني ومالي للجهات الحكومية والشركات', 'متابعة وقياس للأثر'],
         badgeType: 'none', badge: '', discountText: '', offerExpiry: '',
-        ctaLabel: 'تواصل معنا', ctaHref: 'Contact.dc.html',
+        ctaLabel: 'اطلب عرض سعر', ctaHref: waTo('السلام عليكم، أود طلب عرض سعر لجهتنا.'),
         order: 3, status: 'available', active: true
-      },
-      {
-        title: 'المراجعة والتقييم',
-        description: 'رأي متخصص ومكتوب في أصل من أصول منشأتك، مع توصيات قابلة للتنفيذ.',
-        priceType: 'custom', price: '', compareAtPrice: '', currency: 'SAR', priceText: 'حسب النطاق', period: 'once',
-        hidePrice: false, taxNote: false,
-        durationMinutes: 0,
-        features: ['المنصات الإلكترونية', 'الهوية المؤسسية', 'مقالات القيادات ومحتواها', 'الحقائب التدريبية'],
-        badgeType: 'new', badge: '', discountText: '', offerExpiry: '',
-        ctaLabel: 'تواصل معنا', ctaHref: 'Contact.dc.html',
-        order: 4, status: 'available', active: true
       }
     ],
     products: [
@@ -330,13 +320,13 @@
         title: 'قالب دراسة الجدوى',
         description: 'قالب جاهز لإعداد دراسة جدوى احترافية خطوة بخطوة.',
         cover: '', price: 199, currency: 'SAR', format: 'template', url: null,
-        active: true
+        active: false
       },
       {
         title: 'دليل التسعير العملي',
         description: 'دليل عملي لبناء استراتيجية تسعير مربحة لمنتجاتك وخدماتك.',
         cover: '', price: 149, currency: 'SAR', format: 'pdf', url: null,
-        active: true
+        active: false
       }
     ],
     courses: [
@@ -344,13 +334,13 @@
         title: 'أساسيات اتخاذ القرار',
         description: 'دورة تدريبية في مهارات اتخاذ القرار الاستراتيجي بثقة ووضوح.',
         cover: '', durationHours: 6, level: 'beginner', price: 600, currency: 'SAR',
-        active: true
+        active: false
       },
       {
         title: 'بناء نموذج عمل ناجح',
         description: 'ورشة عملية لتصميم نموذج عمل واضح وقابل للتنفيذ.',
         cover: '', durationHours: 8, level: 'intermediate', price: 900, currency: 'SAR',
-        active: true
+        active: false
       }
     ]
   };
@@ -378,9 +368,9 @@
       "cta": {
         "enabled": true,
         "title": "هل في عملك هدر لا تراه؟",
-        "description": "احجز جلسة تشخيص وتطوير، ونحدد معًا أول خطوة للتحسين.",
-        "buttonText": "احجز جلسة تشخيص",
-        "buttonUrl": "Contact.dc.html"
+        "description": "احجز استشارة تطوير وتقنية، ونحدد معًا أول خطوة للتحسين.",
+        "buttonText": "احجز استشارتك",
+        "buttonUrl": waTo("السلام عليكم، قرأت مقال الهدر وأود حجز استشارة.")
       },
       "seoTitle": "الهدر الذي يخلّفه الذكاء الاصطناعي وكيف تتخلص منه",
       "seoDescription": "ثلاثة أنواع من الهدر يخلّفها العمل مع الذكاء الاصطناعي، من واقع الممارسة، وطريقة كايزن للتخلص منها.",

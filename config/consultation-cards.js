@@ -187,7 +187,7 @@
         var x = o.x;
         var feats = Array.isArray(x.features) ? x.features.filter(Boolean) : [];
         var customHref = (x.ctaHref || '').trim();
-        var useWa = !customHref && !!waLink;
+        var useWa = (!customHref && !!waLink) || /^https:\/\/wa\.me\//.test(customHref);
         var price = priceOf(x);
         var offer = offerOf(x);
         var showOffer = price.mode === 'amount' && !offer.expired;
